@@ -1,5 +1,7 @@
 plugins {
     id(Libs.Plugins.kotlinJvm) version Libs.Versions.kotlin
+    id(Libs.Plugins.ktlint) version Libs.Versions.ktlint
+    id(Libs.Plugins.ktlintIdea) version Libs.Versions.ktlint
 }
 
 group = "org.kiworkshop.learningfpinkotlin"
@@ -20,4 +22,11 @@ dependencies {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.ktlintFormat.get().group = "verification"
+tasks.ktlintCheck.get().group = "other"
+
+tasks.check {
+    dependsOn(tasks.ktlintFormat)
 }
