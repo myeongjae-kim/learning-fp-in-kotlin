@@ -1,12 +1,15 @@
 object Libs {
     object Plugins {
         const val kotlinJvm = "org.jetbrains.kotlin.jvm"
+        const val ktlint = "org.jlleitschuh.gradle.ktlint"
+        const val ktlintIdea = "org.jlleitschuh.gradle.ktlint-idea"
     }
 
     object Versions {
         const val kotlin = "1.5.30"
         const val kotest = "4.6.2"
         const val mockk = "1.12.0"
+        const val ktlint = "10.1.0"
     }
 
     object Test {
