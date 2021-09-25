@@ -11,6 +11,11 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
+
+    testImplementation(Libs.Test.kotest)
+    testImplementation(Libs.Test.kotestAssertionsCore)
+    testImplementation(Libs.Test.kotestPropertyTesting)
+    testImplementation(Libs.Test.mockk)
 }
 
 tasks.withType<Test> {
