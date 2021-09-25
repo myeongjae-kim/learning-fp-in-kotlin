@@ -4,8 +4,7 @@ plugins {
     id(Libs.Plugins.kotlinJvm) version Libs.Versions.kotlin
     id(Libs.Plugins.ktlint) version Libs.Versions.ktlint
     id(Libs.Plugins.ktlintIdea) version Libs.Versions.ktlint
-
-    id("com.github.dawnwords.jacoco.badge") version "0.2.4"
+    id(Libs.Plugins.jacocoBadge) version Libs.Versions.jacocoBadge
 }
 
 group = "org.kiworkshop.learningfpinkotlin"

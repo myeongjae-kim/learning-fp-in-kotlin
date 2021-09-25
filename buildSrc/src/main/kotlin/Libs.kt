@@ -3,6 +3,7 @@ object Libs {
         const val kotlinJvm = "org.jetbrains.kotlin.jvm"
         const val ktlint = "org.jlleitschuh.gradle.ktlint"
         const val ktlintIdea = "org.jlleitschuh.gradle.ktlint-idea"
+        const val jacocoBadge = "com.github.dawnwords.jacoco.badge"
     }
 
     object Versions {
@@ -11,6 +12,7 @@ object Libs {
         const val mockk = "1.12.0"
         const val ktlint = "10.1.0"
         const val jacoco = "0.8.7"
+        const val jacocoBadge = "0.2.4"
     }
 
     object Test {
