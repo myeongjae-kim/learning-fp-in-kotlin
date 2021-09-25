@@ -4,6 +4,8 @@ plugins {
     id(Libs.Plugins.kotlinJvm) version Libs.Versions.kotlin
     id(Libs.Plugins.ktlint) version Libs.Versions.ktlint
     id(Libs.Plugins.ktlintIdea) version Libs.Versions.ktlint
+
+    id("com.github.dawnwords.jacoco.badge") version "0.2.4"
 }
 
 group = "org.kiworkshop.learningfpinkotlin"
@@ -65,6 +67,7 @@ tasks.test {
 
 tasks.jacocoTestReport {
     dependsOn(tasks.test) // tests are required to run before generating the report
+    finalizedBy(tasks.generateJacocoBadge)
 }
 
 val jacocoExcludePatterns = listOf("**/*Application.class", "**/*ApplicationKt.class", "**/Constants.class")
