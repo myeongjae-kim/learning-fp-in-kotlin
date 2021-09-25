@@ -1,0 +1,23 @@
+#!/bin/sh
+
+echo "[pre-push] Running check..."
+
+git log --oneline | head -n 1 | grep "\*\* Update test coverage. \*\*$" > /dev/null
+if [ "$?" = 0 ] ; then
+  echo "[pre-push] Already checked."
+  exit 0
+fi
+
+# Validate code
+./gradlew check
+
+status=$?
+
+if [ "$status" = 0 ] ; then
+    echo "[pre-push] no issues found. Proceeding with commit."
+    git add README.md && git commit -m "** Update test coverage. **"
+    exit 0
+else
+    echo 1>&2 "[pre-push] issues found. you need to fix before push."
+    exit 1
+fi
