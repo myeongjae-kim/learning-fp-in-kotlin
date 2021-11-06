@@ -77,4 +77,42 @@ class Chap3 : StringSpec({
         elem(10, listOf(1, 2, 3, 10)) shouldBe true
         elem(10, listOf(1, 2, 3)) shouldBe false
     }
+
+    "Example 3-7" {
+        operator fun <T> Sequence<T>.plus(other: () -> Sequence<T>) = object : Sequence<T> {
+            private val thisIterator: Iterator<T> by lazy { this@plus.iterator() }
+            private val otherIterator: Iterator<T> by lazy { other().iterator() }
+
+            override fun iterator() = object : Iterator<T> {
+                override fun next(): T =
+                    if (thisIterator.hasNext())
+                        thisIterator.next()
+                    else
+                        otherIterator.next()
+
+                override fun hasNext(): Boolean = thisIterator.hasNext() || otherIterator.hasNext()
+            }
+        }
+
+        fun repeat(n: Int): Sequence<Int> = sequenceOf(n) + { repeat(n) }
+
+        /*
+        이걸 원한건 아니겠지
+        fun takeSequence(n: Int, sequence: Sequence<Int>): List<Int> = sequence.take(5).toList()
+         */
+
+        fun takeSequence(n: Int, sequence: Sequence<Int>): List<Int> = sequence.iterator().let {
+            var list = listOf<Int>()
+            for (i in 1..n) {
+                if (!it.hasNext()) {
+                    break
+                }
+                list = list + it.next()
+            }
+
+            return list
+        }
+
+        takeSequence(5, repeat(3)).toString() shouldBe "[3, 3, 3, 3, 3]"
+    }
 })
