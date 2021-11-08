@@ -115,4 +115,52 @@ class Chap3 : StringSpec({
 
         takeSequence(5, repeat(3)).toString() shouldBe "[3, 3, 3, 3, 3]"
     }
+
+    "Example 3-8" {
+        // Array<Int>가 아니고 IntArray
+        fun quicksort(array: IntArray) {
+            // Lomuto partition scheme
+            // 바깥에선 quicksort(IntArray) 함수만 보도록 중첩 함수로 구현했다.
+            fun partition(array: IntArray, lo: Int, hi: Int): Int {
+                val pivot = array[hi]
+
+                var i = lo - 1
+
+                for (j in lo..hi) {
+                    // pivot 보다 작거나 같은 값이 array 앞쪽으로 모이고,
+                    // pivot은 array[hi] 이므로 마지막으로 pivot의 index가 i에 들어가게 된다.
+                    // 그러므로 index i 이하의 값은 pivot보다 같거나 작다.
+                    if (array[j] <= pivot) {
+                        i++
+                        array[i] = array[j].also { array[j] = array[i] }
+                    }
+                }
+                return i
+            }
+
+            fun quicksort(array: IntArray, lo: Int, hi: Int) {
+                val sorted = lo < 0 || hi < 0 || lo >= hi
+                if (sorted) {
+                    return
+                }
+
+                val p = partition(array, lo, hi)
+
+                quicksort(array, lo, p - 1)
+                quicksort(array, p + 1, hi)
+            }
+
+            quicksort(array, 0, array.size - 1)
+        }
+
+        val arrays: List<IntArray> = listOf(
+            intArrayOf(5, 4, 3, 2, 1),
+            intArrayOf(1, 2, 3, 4, 5),
+            intArrayOf(3, 4, 2, 5, 1),
+        ).map { it.apply(::quicksort) }
+
+        arrays.forEach {
+            it.toList().shouldContainExactly(1, 2, 3, 4, 5)
+        }
+    }
 })
