@@ -163,4 +163,12 @@ class Chap3 : StringSpec({
             it.toList().shouldContainExactly(1, 2, 3, 4, 5)
         }
     }
+
+    "Example 3-9" {
+        fun gcd(m: Int, n: Int): Int = if (n == 0) m else gcd(n, m % n)
+
+        gcd(10, 4) shouldBe 2
+        gcd(27, 3) shouldBe 3
+        gcd(19, 3) shouldBe 1
+    }
 })
