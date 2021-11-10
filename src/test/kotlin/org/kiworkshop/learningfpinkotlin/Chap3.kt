@@ -45,6 +45,15 @@ class Chap3 : StringSpec({
         assertThatParameterIsFactorialFunction(::factorial)
     }
 
+    fun assertThatParameterIsToBinaryFunction(toBinary: (Int) -> String) {
+        toBinary(0) shouldBe "0"
+        toBinary(1) shouldBe "1"
+        toBinary(2) shouldBe "10"
+        toBinary(3) shouldBe "11"
+        toBinary(1024) shouldBe "10000000000"
+        toBinary(1023) shouldBe "1111111111"
+    }
+
     "Example 3-4" {
         fun toBinary(n: Int): String {
             fun toBinaryRecur(n: Int): String =
@@ -59,12 +68,7 @@ class Chap3 : StringSpec({
                 toBinaryRecur(n)
         }
 
-        toBinary(0) shouldBe "0"
-        toBinary(1) shouldBe "1"
-        toBinary(2) shouldBe "10"
-        toBinary(3) shouldBe "11"
-        toBinary(1024) shouldBe "10000000000"
-        toBinary(1023) shouldBe "1111111111"
+        assertThatParameterIsToBinaryFunction(::toBinary)
     }
 
     "Example 3-5" {
@@ -234,5 +238,19 @@ class Chap3 : StringSpec({
         }
 
         assertThatParameterIsPowerFunction(::power)
+    }
+
+    "Example 3-14" {
+        fun toBinary(n: Int): String {
+            if (n == 0) return "0"
+
+            tailrec fun toBinary(n: Int, acc: String): String =
+                if (n == 0) acc
+                else toBinary(n shr 1, acc + (n and 1))
+
+            return toBinary(n, "").reversed()
+        }
+
+        assertThatParameterIsToBinaryFunction(::toBinary)
     }
 })
