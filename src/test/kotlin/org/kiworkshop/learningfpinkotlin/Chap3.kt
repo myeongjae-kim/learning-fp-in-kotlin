@@ -85,14 +85,18 @@ class Chap3 : StringSpec({
         assertThatParameterIsReplicateFunction(::replicate)
     }
 
+    fun assertThatFunctionIsElem(elem: (Int, List<Int>) -> Boolean) {
+        elem(10, listOf(1, 2, 3, 10)) shouldBe true
+        elem(10, listOf(1, 2, 3)) shouldBe false
+    }
+
     "Example 3-6" {
         fun elem(num: Int, list: List<Int>): Boolean = if (list.isEmpty())
             false
         else
             list.head() == num || elem(num, list.tail())
 
-        elem(10, listOf(1, 2, 3, 10)) shouldBe true
-        elem(10, listOf(1, 2, 3)) shouldBe false
+        assertThatFunctionIsElem(::elem)
     }
 
     "Example 3-7" {
@@ -268,5 +272,19 @@ class Chap3 : StringSpec({
         }
 
         assertThatParameterIsReplicateFunction(::replicate)
+    }
+
+    "Example 3-16" {
+        fun elem(num: Int, list: List<Int>): Boolean {
+            tailrec fun elem(list: List<Int>): Boolean = when {
+                list.isEmpty() -> false
+                list.head() == num -> true
+                else -> elem(list.tail())
+            }
+
+            return elem(list)
+        }
+
+        assertThatFunctionIsElem(::elem)
     }
 })
