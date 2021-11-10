@@ -188,4 +188,18 @@ class Chap3 : StringSpec({
 
         assertThatParameterIsFactorialFunction(::factorial)
     }
+
+    "Example 3-11" {
+        fun factorial(n: Int): Int {
+            fun factorial(n: Int, first: Int, second: Int): Int = when (n) {
+                0 -> first
+                1 -> second
+                else -> factorial(n - 1, second, second * n)
+            }
+
+            return factorial(n, 1, 1)
+        }
+
+        assertThatParameterIsFactorialFunction(::factorial)
+    }
 })
