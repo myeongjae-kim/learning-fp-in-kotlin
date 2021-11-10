@@ -26,14 +26,18 @@ class Chap3 : StringSpec({
         power(3.0, 3) shouldBe 27.0
     }
 
-    "Example 3-3" {
-        fun factorial(n: Int): Int = if (n == 0) 1 else factorial(n - 1) * n
-
+    fun assertThatParameterIsFactorialFunction(factorial: (Int) -> Int) {
         factorial(0) shouldBe 1
         factorial(1) shouldBe 1
         factorial(2) shouldBe (2 * 1)
         factorial(3) shouldBe (3 * 2 * 1)
         factorial(4) shouldBe (4 * 3 * 2 * 1)
+    }
+
+    "Example 3-3" {
+        fun factorial(n: Int): Int = if (n == 0) 1 else factorial(n - 1) * n
+
+        assertThatParameterIsFactorialFunction(::factorial)
     }
 
     "Example 3-4" {
@@ -170,5 +174,18 @@ class Chap3 : StringSpec({
         gcd(10, 4) shouldBe 2
         gcd(27, 3) shouldBe 3
         gcd(19, 3) shouldBe 1
+    }
+
+    "Example 3-10" {
+        fun factorial(n: Int): Int {
+            val memo = Array(100) { -1 }.apply { this[0] = 1 }
+            fun factorialRecur(n: Int): Int =
+                if (memo[n] != -1) memo[n]
+                else (factorial(n - 1) * n).also { memo[n] = it }
+
+            return factorialRecur(n)
+        }
+
+        assertThatParameterIsFactorialFunction(::factorial)
     }
 })
