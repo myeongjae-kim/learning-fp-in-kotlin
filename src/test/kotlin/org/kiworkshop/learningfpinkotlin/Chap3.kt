@@ -18,12 +18,17 @@ class Chap3 : StringSpec({
         """ shouldHaveMinLength 0
     }
 
-    "Example 3-2" {
-        fun power(x: Double, n: Int): Double = if (n == 0) 1.0 else power(x, n - 1) * x
-
+    fun assertThatParameterIsPowerFunction(power: (Double, Int) -> Double) {
+        power(2.0, 0) shouldBe 1.0
         power(2.0, 3) shouldBe 8.0
         power(2.0, 10) shouldBe 1024.0
         power(3.0, 3) shouldBe 27.0
+    }
+
+    "Example 3-2" {
+        fun power(x: Double, n: Int): Double = if (n == 0) 1.0 else power(x, n - 1) * x
+
+        assertThatParameterIsPowerFunction(::power)
     }
 
     fun assertThatParameterIsFactorialFunction(factorial: (Int) -> Int) {
@@ -215,5 +220,19 @@ class Chap3 : StringSpec({
         }
 
         assertThatParameterIsFactorialFunction(::factorial)
+    }
+
+    "Example 3-13" {
+        fun power(x: Double, n: Int): Double {
+            tailrec fun power(n: Int, acc: Double): Double = when (n) {
+                0 -> 1.0
+                1 -> acc
+                else -> power(n - 1, acc * x)
+            }
+
+            return power(n, x)
+        }
+
+        assertThatParameterIsPowerFunction(::power)
     }
 })
