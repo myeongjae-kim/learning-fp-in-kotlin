@@ -71,14 +71,18 @@ class Chap3 : StringSpec({
         assertThatParameterIsToBinaryFunction(::toBinary)
     }
 
+    fun assertThatParameterIsReplicateFunction(replicate: (Int, Int) -> List<Int>) {
+        replicate(3, 5) shouldContainExactly listOf(5, 5, 5)
+        replicate(2, 10) shouldContainExactly listOf(10, 10)
+    }
+
     "Example 3-5" {
         fun replicate(n: Int, element: Int): List<Int> = if (n == 0)
             listOf()
         else
             replicate(n - 1, element) + element
 
-        replicate(3, 5) shouldContainExactly listOf(5, 5, 5)
-        replicate(2, 10) shouldContainExactly listOf(10, 10)
+        assertThatParameterIsReplicateFunction(::replicate)
     }
 
     "Example 3-6" {
@@ -252,5 +256,17 @@ class Chap3 : StringSpec({
         }
 
         assertThatParameterIsToBinaryFunction(::toBinary)
+    }
+
+    "Example 3-15" {
+        fun replicate(n: Int, element: Int): List<Int> {
+            tailrec fun replicate(n: Int, acc: List<Int>): List<Int> =
+                if (n == 0) acc
+                else replicate(n - 1, acc + element)
+
+            return replicate(n, listOf())
+        }
+
+        assertThatParameterIsReplicateFunction(::replicate)
     }
 })
