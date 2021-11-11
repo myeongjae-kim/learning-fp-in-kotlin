@@ -4,6 +4,7 @@ import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldHaveMinLength
+import kotlin.math.sqrt
 
 class Chap3 : StringSpec({
     "Example 3-1" {
@@ -286,5 +287,17 @@ class Chap3 : StringSpec({
         }
 
         assertThatFunctionIsElem(::elem)
+    }
+
+    "Example 3-17" {
+        fun sqrtAndDivideBy2(n: Double): Double {
+            fun divideBy2(n: Double): Double {
+                val result = n / 2
+                return if (result < 1) result else sqrtAndDivideBy2(result)
+            }
+            return divideBy2(sqrt(n))
+        }
+
+        println(sqrtAndDivideBy2(3.0))
     }
 })
