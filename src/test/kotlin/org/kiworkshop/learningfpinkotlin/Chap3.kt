@@ -254,9 +254,9 @@ class Chap3 : StringSpec({
 
             tailrec fun toBinary(n: Int, acc: String): String =
                 if (n == 0) acc
-                else toBinary(n shr 1, acc + (n and 1))
+                else toBinary(n shr 1, (n and 1).toString() + acc)
 
-            return toBinary(n, "").reversed()
+            return toBinary(n, "")
         }
 
         assertThatParameterIsToBinaryFunction(::toBinary)
