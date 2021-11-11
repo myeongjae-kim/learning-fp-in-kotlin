@@ -4,6 +4,7 @@ import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.string.shouldHaveMinLength
+import java.math.BigDecimal
 import kotlin.math.sqrt
 
 class Chap3 : StringSpec({
@@ -333,5 +334,33 @@ class Chap3 : StringSpec({
         }
 
         println(trampoline(sqrtAndDivideBy2(10000000.0)))
+    }
+
+    "Example 3-19" {
+        fun factorial(n: BigDecimal): BigDecimal {
+            fun factorial(n: BigDecimal, first: BigDecimal, second: BigDecimal): Bounce<BigDecimal> = when (n) {
+                BigDecimal.ZERO -> Done(first)
+                BigDecimal.ONE -> Done(second)
+                else -> More {
+                    println("into factorial")
+                    val more = factorial(n.minus(BigDecimal.ONE), second, second * n)
+                    println("out factorial")
+                    more
+                }
+            }
+
+            return trampoline(factorial(n, BigDecimal.ONE, BigDecimal.ONE))
+        }
+
+        println("factorial(0)")
+        factorial(BigDecimal.ZERO) shouldBe BigDecimal.ONE
+        println("factorial(1)")
+        factorial(BigDecimal.ONE) shouldBe BigDecimal.ONE
+        println("factorial(2)")
+        factorial(BigDecimal.valueOf(2L)) shouldBe BigDecimal.valueOf(2)
+        println("factorial(3)")
+        factorial(BigDecimal.valueOf(3L)) shouldBe BigDecimal.valueOf(6)
+        println("factorial(4)")
+        factorial(BigDecimal.valueOf(4L)) shouldBe BigDecimal.valueOf(24)
     }
 })
