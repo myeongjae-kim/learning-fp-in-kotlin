@@ -292,12 +292,46 @@ class Chap3 : StringSpec({
     "Example 3-17" {
         fun sqrtAndDivideBy2(n: Double): Double {
             fun divideBy2(n: Double): Double {
-                val result = n / 2
-                return if (result < 1) result else sqrtAndDivideBy2(result)
+                val divided = n / 2
+                println("into sqrtAndDivideBy2")
+                val result = if (divided < 1) divided else sqrtAndDivideBy2(divided)
+                println("out sqrtAndDivideBy2")
+                return result
             }
-            return divideBy2(sqrt(n))
+
+            println("into divideBy2")
+            val result = divideBy2(sqrt(n))
+            println("out divideBy2")
+
+            return result
         }
 
-        println(sqrtAndDivideBy2(3.0))
+        println(sqrtAndDivideBy2(10000000.0))
+    }
+
+    "Example 3-18" {
+        fun sqrtAndDivideBy2(n: Double): Bounce<Double> {
+            fun divideBy2(n: Double): Bounce<Double> {
+                val dividedBy2 = n / 2
+
+                println("into sqrtAndDivideBy2")
+                val result = if (dividedBy2 < 1)
+                    Done(dividedBy2)
+                else
+                    More { sqrtAndDivideBy2(dividedBy2) }
+//                    sqrtAndDivideBy2(dividedBy2) // More 없이 바로 sqrtAndDivdeBy2를 호출하면 trampoline을 쓰는 의미가 없어진다.
+
+                println("out sqrtAndDivideBy2")
+
+                return result
+            }
+            println("into divideBy2")
+            val result = divideBy2(sqrt(n))
+            println("out divideBy2")
+
+            return result
+        }
+
+        println(trampoline(sqrtAndDivideBy2(10000000.0)))
     }
 })
