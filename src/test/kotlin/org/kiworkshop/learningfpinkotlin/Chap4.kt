@@ -41,4 +41,12 @@ class Chap4 : StringSpec({
         f.partial2("alpha")("beta", "gamma") shouldBe "beta, alpha, gamma"
         f.partial3("alpha")("beta", "gamma") shouldBe "beta, gamma, alpha"
     }
+
+    "Example 4-3" {
+        fun max(p1: Int): (Int) -> Int = { p2 ->
+            kotlin.math.max(p1, p2)
+        }
+
+        max(1)(2) shouldBe 2
+    }
 })
