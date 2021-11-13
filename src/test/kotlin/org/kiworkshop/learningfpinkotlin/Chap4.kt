@@ -49,4 +49,15 @@ class Chap4 : StringSpec({
 
         max(1)(2) shouldBe 2
     }
+
+    "Example 4-4" {
+        fun <P1, P2, R> ((P1, P2) -> R).curried(): (P1) -> (P2) -> R =
+            { p1 -> { p2 -> this(p1, p2) } }
+
+        fun min(p1: Int, p2: Int) = kotlin.math.min(p1, p2)
+
+        val curriedMin: (Int) -> (Int) -> Int = ::min.curried()
+
+        curriedMin(1)(2) shouldBe 1
+    }
 })
