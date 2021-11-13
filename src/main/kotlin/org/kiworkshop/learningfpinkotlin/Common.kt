@@ -20,3 +20,32 @@ tailrec fun <A> trampoline(bounce: Bounce<A>): A {
         is More -> trampoline(bounce.thunk())
     }
 }
+
+// partial function
+class PartialFunction<in P, out R>(
+    private val condition: (P) -> Boolean,
+    private val f: (P) -> R
+) : (P) -> R {
+    override fun invoke(p: P): R = when {
+        condition(p) -> f(p)
+        else -> throw IllegalArgumentException("$p isn't supported.")
+    }
+
+    fun isDefinedAt(p: P): Boolean = condition(p)
+
+    fun invokeOrElse(p: P, default: @UnsafeVariance R): R = if (condition(p)) f(p) else default
+    fun orElse(that: PartialFunction<@UnsafeVariance P, @UnsafeVariance R>): PartialFunction<P, R> =
+        PartialFunction(
+            condition = { p -> this.condition(p) || that.condition(p) },
+            f = { p ->
+                when {
+                    this.condition(p) -> this.f(p)
+                    that.condition(p) -> that.f(p)
+                    else -> throw IllegalArgumentException("$p isn't supported.")
+                }
+            }
+        )
+}
+
+fun <P, R> ((P) -> R).toPartialFunction(definedAt: (P) -> Boolean): PartialFunction<P, R> =
+    PartialFunction(definedAt, this)
