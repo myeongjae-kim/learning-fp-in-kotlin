@@ -2,6 +2,7 @@ package org.kiworkshop.learningfpinkotlin
 
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.booleans.shouldBeTrue
+import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 
 class Chap4 : StringSpec({
@@ -59,5 +60,40 @@ class Chap4 : StringSpec({
         val curriedMin: (Int) -> (Int) -> Int = ::min.curried()
 
         curriedMin(1)(2) shouldBe 1
+    }
+
+    fun max(ints: List<Int>): Int? {
+        tailrec fun max(ints: List<Int>, acc: Int): Int =
+            if (ints.isEmpty())
+                acc
+            else
+                max(ints.tail(), kotlin.math.max(ints.head(), acc))
+
+        return if (ints.isEmpty()) null else max(ints.tail(), ints.head())
+    }
+
+    fun power(x: Int?, n: Int): Int? {
+        if (x == null) return null
+
+        tailrec fun power(n: Int, acc: Int): Int = when (n) {
+            0 -> 1
+            1 -> acc
+            else -> power(n - 1, acc * x)
+        }
+
+        return power(n, x)
+    }
+
+    "Example 4-5" {
+        max(listOf()) shouldBe null
+        max(listOf(1, 2, 3, 4, 5)) shouldBe 5
+        power(5, 3) shouldBe 5 * 5 * 5
+        power(5, 0) shouldBe 1
+        power(null, 50).shouldBeNull()
+
+        fun composed(ints: List<Int>): Int? = power(max(ints), 2)
+
+        composed(listOf(1, 2, 3, 4, 5)) shouldBe 25
+        composed(listOf()) shouldBe null
     }
 })
