@@ -6,6 +6,9 @@ import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 
 class Chap4 : StringSpec({
+    // List<T>.max() 대신 List<T>.maxOrNull()
+    // List<T>.min() 대신 List<T>.minOrNull()
+
     "Example 4-1" {
         // test code 4-16
         val condition: (Int) -> Boolean = { it.rem(2) == 0 }
@@ -95,5 +98,23 @@ class Chap4 : StringSpec({
 
         composed(listOf(1, 2, 3, 4, 5)) shouldBe 25
         composed(listOf()) shouldBe null
+    }
+
+    "Example 4-6" {
+        // solution 1
+        infix fun <F, G, H, R> ((F, G) -> R).compose(h: (H) -> F): (H, G) -> R =
+            { hInput: H, gInput: G -> this(h(hInput), gInput) }
+
+        val composed = ::power compose ::max
+
+        composed(listOf(1, 2, 3, 4, 5), 2) shouldBe 25
+        composed(listOf(), 2) shouldBe null
+
+        // solution 2
+        val square: (Int?) -> Int? = { power(it, 2) }
+
+        val composed2 = square compose ::max
+        composed2(listOf(1, 2, 3, 4, 5)) shouldBe 25
+        composed2(listOf()) shouldBe null
     }
 })
