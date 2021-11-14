@@ -32,3 +32,20 @@ fun <T> FunList<T>.getHead(): T = when (this) {
     Nil -> throw NoSuchElementException()
     is Cons -> head
 }
+
+tailrec fun <T> FunList<T>.filter(acc: FunList<T> = Nil, p: (T) -> Boolean): FunList<T> = when (this) {
+    Nil -> acc.reverse()
+    is Cons -> if (p(head))
+        tail.filter(acc.addHead(head), p)
+    else
+        tail.filter(acc, p)
+}
+
+tailrec fun <T> FunList<T>.drop(n: Int): FunList<T> = when (this) {
+    Nil -> this
+    is Cons ->
+        if (n < 1)
+            this
+        else
+            this.tail.drop(n - 1)
+}

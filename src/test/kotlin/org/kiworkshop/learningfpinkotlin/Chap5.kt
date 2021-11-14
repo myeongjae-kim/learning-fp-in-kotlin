@@ -1,6 +1,7 @@
 package org.kiworkshop.learningfpinkotlin
 
 import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.shouldBe
 import org.kiworkshop.learningfpinkotlin.FunList.Cons
@@ -38,5 +39,16 @@ class Chap5 : StringSpec({
         Cons(1, Nil).appendTail(2).reverse().toList().shouldContainExactly(2, 1)
         Cons(1, Nil).addHead(2).addHead(3).getTail().toList().shouldContainExactly(2, 1)
         Cons(1, Nil).addHead(2).addHead(3).getHead() shouldBe 3
+    }
+
+    "Example 5-4" {
+        val list = Cons(5, Nil)
+            .addHead(4)
+            .addHead(3)
+            .addHead(2)
+            .addHead(1)
+        list.filter { it < 3 }.toList().shouldContainExactly(1, 2)
+        list.drop(3).toList().shouldContainExactly(4, 5)
+        list.drop(10).toList().shouldBeEmpty()
     }
 })
