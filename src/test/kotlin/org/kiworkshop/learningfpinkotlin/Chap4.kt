@@ -55,9 +55,6 @@ class Chap4 : StringSpec({
     }
 
     "Example 4-4" {
-        fun <P1, P2, R> ((P1, P2) -> R).curried(): (P1) -> (P2) -> R =
-            { p1 -> { p2 -> this(p1, p2) } }
-
         fun min(p1: Int, p2: Int) = kotlin.math.min(p1, p2)
 
         val curriedMin: (Int) -> (Int) -> Int = ::min.curried()
@@ -116,5 +113,10 @@ class Chap4 : StringSpec({
         val composed2 = square compose ::max
         composed2(listOf(1, 2, 3, 4, 5)) shouldBe 25
         composed2(listOf()) shouldBe null
+
+        // solution 3
+        val getMaxAndPower = ::power.curried() compose ::max
+        getMaxAndPower(listOf(1, 2, 3, 4, 5))(2) shouldBe 25
+        getMaxAndPower(listOf())(2) shouldBe null
     }
 })
