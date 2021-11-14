@@ -136,4 +136,26 @@ class Chap4 : StringSpec({
 
         takeWhile(listOf(1, 2, 3, 4, 5)) { it < 3 }.shouldContainExactly(1, 2)
     }
+
+    "Example 4-8" {
+        fun <T> takeWhile(list: Sequence<T>, condition: (T) -> Boolean): List<T> {
+            val iterator = list.iterator()
+            tailrec fun takeWhile(acc: List<T>): List<T> {
+                if (!iterator.hasNext()) {
+                    return acc
+                }
+
+                val next = iterator.next()
+                if (!condition(next)) {
+                    return acc
+                }
+
+                return takeWhile(acc + next)
+            }
+
+            return takeWhile(listOf())
+        }
+
+        takeWhile(generateSequence(1) { it + 1 }) { it < 3 }.shouldContainExactly(1, 2)
+    }
 })
