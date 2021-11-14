@@ -62,3 +62,11 @@ tailrec fun <T> FunList<T>.take(n: Int, acc: FunList<T> = Nil): FunList<T> = whe
     Nil -> this
     is Cons -> if (n < 1) acc.reverse() else this.tail.take(n - 1, acc.addHead(this.head))
 }
+
+tailrec fun <T> FunList<T>.takeWhile(acc: FunList<T> = Nil, p: (T) -> Boolean): FunList<T> = when (this) {
+    Nil -> this
+    is Cons -> if (!p(this.head))
+        acc.reverse()
+    else
+        this.tail.takeWhile(acc.addHead(head), p)
+}

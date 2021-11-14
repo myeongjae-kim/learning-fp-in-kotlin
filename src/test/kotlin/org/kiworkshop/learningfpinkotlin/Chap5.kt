@@ -8,6 +8,14 @@ import org.kiworkshop.learningfpinkotlin.FunList.Cons
 import org.kiworkshop.learningfpinkotlin.FunList.Nil
 
 class Chap5 : StringSpec({
+    // 연습문제 5-7, takeWhile에서 element가 모두 p를 만족하지 못했을 때 원본 리스트가 아니라 빈 리스트를 내보내야 하는거 아닌가?
+
+    val list = Cons(5, Nil)
+        .addHead(4)
+        .addHead(3)
+        .addHead(2)
+        .addHead(1)
+
     fun <T> FunList<T>.toList(): List<T> {
         tailrec fun FunList<T>.toList(acc: List<T>): List<T> = when (this) {
             is Nil -> acc
@@ -43,11 +51,6 @@ class Chap5 : StringSpec({
 
     "Example 5-4" {
         // test filter
-        val list = Cons(5, Nil)
-            .addHead(4)
-            .addHead(3)
-            .addHead(2)
-            .addHead(1)
         list.filter { it < 3 }.toList().shouldContainExactly(1, 2)
 
         // test drop
@@ -60,24 +63,19 @@ class Chap5 : StringSpec({
     }
 
     "Example 5-5" {
-        val list = Cons(5, Nil)
-            .addHead(4)
-            .addHead(3)
-            .addHead(2)
-            .addHead(1)
-
         list.toList().shouldContainExactly(1, 2, 3, 4, 5)
         list.dropWhile { it != 3 }.toList().shouldContainExactly(3, 4, 5)
         list.toList().shouldContainExactly(1, 2, 3, 4, 5)
     }
 
     "Example 5-6" {
-        val list = Cons(5, Nil)
-            .addHead(4)
-            .addHead(3)
-            .addHead(2)
-            .addHead(1)
-
         list.take(3).toList().shouldContainExactly(1, 2, 3)
+    }
+
+    "Example 5-7" {
+        list.takeWhile { it < 3 }.toList().shouldContainExactly(1, 2)
+        list.takeWhile { false }.toList().shouldBeEmpty()
+
+        listOf(1, 2, 3, 4, 5).takeWhile { false }.shouldBeEmpty()
     }
 })
