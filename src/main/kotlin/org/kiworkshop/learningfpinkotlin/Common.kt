@@ -49,3 +49,5 @@ class PartialFunction<in P, out R>(
 
 fun <P, R> ((P) -> R).toPartialFunction(definedAt: (P) -> Boolean): PartialFunction<P, R> =
     PartialFunction(definedAt, this)
+
+infix fun <F, G, R> ((F) -> R).compose(g: (G) -> F): (G) -> R = { gInput: G -> this(g(gInput)) }
