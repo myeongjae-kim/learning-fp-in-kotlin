@@ -22,4 +22,12 @@ class Chap5 : StringSpec({
         // then
         intList.toList().shouldContainExactly(1, 2, 3, 4, 5)
     }
+
+    "Example 5-2" {
+        // when
+        val doubleList: FunList<Double> = Cons(1.0, Cons(2.0, Cons(3.0, Cons(4.0, Cons(5.0, Nil)))))
+
+        // then
+        doubleList.toList().shouldContainExactly(1.0, 2.0, 3.0, 4.0, 5.0)
+    }
 })
