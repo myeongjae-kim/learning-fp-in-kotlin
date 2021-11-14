@@ -2,6 +2,7 @@ package org.kiworkshop.learningfpinkotlin
 
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.booleans.shouldBeTrue
+import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 
@@ -118,5 +119,21 @@ class Chap4 : StringSpec({
         val getMaxAndPower = ::power.curried() compose ::max
         getMaxAndPower(listOf(1, 2, 3, 4, 5))(2) shouldBe 25
         getMaxAndPower(listOf())(2) shouldBe null
+    }
+
+    "Example 4-7" {
+        fun <T> takeWhile(list: List<T>, condition: (T) -> Boolean): List<T> {
+            tailrec fun takeWhile(rest: List<T>, acc: List<T>): List<T> = when {
+                rest.isEmpty() -> acc
+                else -> takeWhile(
+                    rest.tail(),
+                    acc + rest.head().let { if (condition(it)) listOf(it) else listOf() }
+                )
+            }
+
+            return takeWhile(list, listOf())
+        }
+
+        takeWhile(listOf(1, 2, 3, 4, 5)) { it < 3 }.shouldContainExactly(1, 2)
     }
 })
