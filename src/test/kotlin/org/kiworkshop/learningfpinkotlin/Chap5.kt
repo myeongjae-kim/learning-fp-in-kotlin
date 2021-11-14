@@ -58,4 +58,16 @@ class Chap5 : StringSpec({
 
         list.toList().shouldContainExactly(1, 2, 3, 4, 5)
     }
+
+    "Example 5-5" {
+        val list = Cons(5, Nil)
+            .addHead(4)
+            .addHead(3)
+            .addHead(2)
+            .addHead(1)
+
+        list.toList().shouldContainExactly(1, 2, 3, 4, 5)
+        list.dropWhile { it != 3 }.toList().shouldContainExactly(3, 4, 5)
+        list.toList().shouldContainExactly(1, 2, 3, 4, 5)
+    }
 })
