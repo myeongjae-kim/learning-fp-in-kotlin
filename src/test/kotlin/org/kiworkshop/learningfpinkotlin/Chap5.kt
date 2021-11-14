@@ -10,11 +10,7 @@ import org.kiworkshop.learningfpinkotlin.FunList.Nil
 class Chap5 : StringSpec({
     // 연습문제 5-7, takeWhile에서 element가 모두 p를 만족하지 못했을 때 원본 리스트가 아니라 빈 리스트를 내보내야 하는거 아닌가?
 
-    val list = Cons(5, Nil)
-        .addHead(4)
-        .addHead(3)
-        .addHead(2)
-        .addHead(1)
+    val list = funListOf(1, 2, 3, 4, 5)
 
     fun <T> FunList<T>.toList(): List<T> {
         tailrec fun FunList<T>.toList(acc: List<T>): List<T> = when (this) {
@@ -77,5 +73,10 @@ class Chap5 : StringSpec({
         list.takeWhile { false }.toList().shouldBeEmpty()
 
         listOf(1, 2, 3, 4, 5).takeWhile { false }.shouldBeEmpty()
+    }
+
+    "Example 5-8" {
+        list.map { it * 2 }.toList().shouldContainExactly(2, 4, 6, 8, 10)
+        list.indexedMap { i, elem -> (i + 1) * 10 + elem }.toList().shouldContainExactly(11, 22, 33, 44, 55)
     }
 })

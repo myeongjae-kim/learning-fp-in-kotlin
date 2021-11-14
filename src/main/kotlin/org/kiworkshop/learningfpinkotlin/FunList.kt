@@ -8,6 +8,13 @@ sealed class FunList<out T> {
     data class Cons<out T>(val head: T, val tail: FunList<T>) : FunList<T>()
 }
 
+fun <T> funListOf(vararg elements: T): FunList<T> = elements.toFunList()
+
+private fun <T> Array<out T>.toFunList(): FunList<T> = when {
+    this.isEmpty() -> Nil
+    else -> Cons(this[0], this.copyOfRange(1, this.size).toFunList())
+}
+
 fun <T> FunList<T>.addHead(head: T): FunList<T> = Cons(head, this)
 
 tailrec fun <T> FunList<T>.appendTail(value: T, acc: FunList<T> = Nil): FunList<T> = when (this) {
@@ -70,3 +77,14 @@ tailrec fun <T> FunList<T>.takeWhile(acc: FunList<T> = Nil, p: (T) -> Boolean): 
     else
         this.tail.takeWhile(acc.addHead(head), p)
 }
+
+tailrec fun <T, R> FunList<T>.map(acc: FunList<R> = Nil, f: (T) -> R): FunList<R> = when (this) {
+    Nil -> acc.reverse()
+    is Cons -> tail.map(acc.addHead(f(head)), f)
+}
+
+tailrec fun <T, R> FunList<T>.indexedMap(index: Int = 0, acc: FunList<R> = Nil, f: (Int, T) -> R): FunList<R> =
+    when (this) {
+        Nil -> acc.reverse()
+        is Cons -> tail.indexedMap(index + 1, acc.addHead(f(index, this.head)), f)
+    }
