@@ -42,13 +42,20 @@ class Chap5 : StringSpec({
     }
 
     "Example 5-4" {
+        // test filter
         val list = Cons(5, Nil)
             .addHead(4)
             .addHead(3)
             .addHead(2)
             .addHead(1)
         list.filter { it < 3 }.toList().shouldContainExactly(1, 2)
+
+        // test drop
+        list.toList().shouldContainExactly(1, 2, 3, 4, 5)
+
         list.drop(3).toList().shouldContainExactly(4, 5)
         list.drop(10).toList().shouldBeEmpty()
+
+        list.toList().shouldContainExactly(1, 2, 3, 4, 5)
     }
 })
