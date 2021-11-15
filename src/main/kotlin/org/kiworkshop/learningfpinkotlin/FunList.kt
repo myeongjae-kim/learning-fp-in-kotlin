@@ -111,3 +111,8 @@ fun <T> FunList<T>.reverseByFoldRight(): FunList<T> = foldRight(Nil as FunList<T
 
 fun <T> FunList<T>.filterByFoldRight(p: (T) -> Boolean): FunList<T> =
     foldRight(Nil as FunList<T>) { it, acc -> if (p(it)) acc.addHead(it) else acc }
+
+tailrec fun <T, R> FunList<T>.zip(other: FunList<R>, acc: FunList<Pair<T, R>> = Nil): FunList<Pair<T, R>> = when {
+    other is Nil || this is Nil -> acc.reverse()
+    else -> this.getTail().zip(other.getTail(), acc.addHead(Pair(this.getHead(), other.getHead())))
+}

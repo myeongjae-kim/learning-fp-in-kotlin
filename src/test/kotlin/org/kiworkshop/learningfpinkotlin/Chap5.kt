@@ -95,4 +95,11 @@ class Chap5 : StringSpec({
     "Example 5-12" {
         list.filterByFoldRight { it and 1 == 1 }.toList().shouldContainExactly(1, 3, 5)
     }
+
+    "Example 5-13" {
+        funListOf(1, 2, 3, 4, 5).zip(funListOf(1.0, 2.0)).toList().mapIndexed { index, pair ->
+            pair.first shouldBe (index + 1)
+            pair.second shouldBe (index + 1).toDouble()
+        }
+    }
 })
