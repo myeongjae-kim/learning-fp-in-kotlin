@@ -2,6 +2,7 @@ package org.kiworkshop.learningfpinkotlin
 
 import org.kiworkshop.learningfpinkotlin.FunList.Cons
 import org.kiworkshop.learningfpinkotlin.FunList.Nil
+import kotlin.math.max
 
 sealed class FunList<out T> {
     object Nil : FunList<Nothing>()
@@ -88,3 +89,11 @@ tailrec fun <T, R> FunList<T>.indexedMap(index: Int = 0, acc: FunList<R> = Nil, 
         Nil -> acc.reverse()
         is Cons -> tail.indexedMap(index + 1, acc.addHead(f(index, this.head)), f)
     }
+
+tailrec fun <T, R> FunList<T>.foldLeft(acc: R, f: (R, T) -> R): R = when (this) {
+    Nil -> acc
+    is Cons -> tail.foldLeft(f(acc, head), f)
+}
+
+// precondition: 리스트의 모든 값은 0보다 크고, 리스트의 크기는 1보다 크다.
+fun FunList<Int>.maximumByFoldLeft(): Int = foldLeft(0) { acc, it -> max(acc, it) }

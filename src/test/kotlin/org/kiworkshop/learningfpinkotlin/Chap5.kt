@@ -79,4 +79,8 @@ class Chap5 : StringSpec({
         list.map { it * 2 }.toList().shouldContainExactly(2, 4, 6, 8, 10)
         list.indexedMap { i, elem -> (i + 1) * 10 + elem }.toList().shouldContainExactly(11, 22, 33, 44, 55)
     }
+
+    "Example 5-9" {
+        list.maximumByFoldLeft() shouldBe 5
+    }
 })
