@@ -108,3 +108,6 @@ fun <T, R> FunList<T>.foldRight(acc: R, f: (T, R) -> R): R = when (this) {
 
 // appendTail을 사용했으므로 시간복잡도는 O(n^2)다. 굳이 이렇게..?
 fun <T> FunList<T>.reverseByFoldRight(): FunList<T> = foldRight(Nil as FunList<T>) { it, acc -> acc.appendTail(it) }
+
+fun <T> FunList<T>.filterByFoldRight(p: (T) -> Boolean): FunList<T> =
+    foldRight(Nil as FunList<T>) { it, acc -> if (p(it)) acc.addHead(it) else acc }
