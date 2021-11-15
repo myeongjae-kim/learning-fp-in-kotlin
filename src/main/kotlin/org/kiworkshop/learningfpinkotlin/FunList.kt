@@ -100,3 +100,11 @@ fun FunList<Int>.maximumByFoldLeft(): Int = foldLeft(0) { acc, it -> max(acc, it
 
 fun <T> FunList<T>.filterByFoldLeft(p: (T) -> Boolean): FunList<T> =
     foldLeft(Nil as FunList<T>) { acc, it -> if (p(it)) acc.addHead(it) else acc }.reverse()
+
+fun <T, R> FunList<T>.foldRight(acc: R, f: (T, R) -> R): R = when (this) {
+    Nil -> acc
+    is Cons -> f(head, tail.foldRight(acc, f))
+}
+
+// appendTail을 사용했으므로 시간복잡도는 O(n^2)다. 굳이 이렇게..?
+fun <T> FunList<T>.reverseByFoldRight(): FunList<T> = foldRight(Nil as FunList<T>) { it, acc -> acc.appendTail(it) }

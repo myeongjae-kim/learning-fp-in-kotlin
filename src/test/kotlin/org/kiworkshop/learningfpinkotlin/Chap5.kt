@@ -87,4 +87,8 @@ class Chap5 : StringSpec({
     "Example 5-10" {
         list.filterByFoldLeft { it and 1 == 1 }.toList().shouldContainExactly(1, 3, 5)
     }
+
+    "Example 5-11" {
+        list.reverseByFoldRight().toList().shouldContainExactly(5, 4, 3, 2, 1)
+    }
 })
