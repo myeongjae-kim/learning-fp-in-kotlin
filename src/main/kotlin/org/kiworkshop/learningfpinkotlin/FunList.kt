@@ -97,3 +97,6 @@ tailrec fun <T, R> FunList<T>.foldLeft(acc: R, f: (R, T) -> R): R = when (this) 
 
 // precondition: 리스트의 모든 값은 0보다 크고, 리스트의 크기는 1보다 크다.
 fun FunList<Int>.maximumByFoldLeft(): Int = foldLeft(0) { acc, it -> max(acc, it) }
+
+fun <T> FunList<T>.filterByFoldLeft(p: (T) -> Boolean): FunList<T> =
+    foldLeft(Nil as FunList<T>) { acc, it -> if (p(it)) acc.addHead(it) else acc }.reverse()

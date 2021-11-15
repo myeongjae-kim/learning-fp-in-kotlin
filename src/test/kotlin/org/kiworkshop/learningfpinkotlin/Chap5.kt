@@ -83,4 +83,8 @@ class Chap5 : StringSpec({
     "Example 5-9" {
         list.maximumByFoldLeft() shouldBe 5
     }
+
+    "Example 5-10" {
+        list.filterByFoldLeft { it and 1 == 1 }.toList().shouldContainExactly(1, 3, 5)
+    }
 })
