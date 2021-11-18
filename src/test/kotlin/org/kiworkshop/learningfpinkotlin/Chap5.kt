@@ -4,6 +4,9 @@ import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.ints.shouldBeLessThan
+import io.kotest.matchers.longs.shouldBeGreaterThan
+import io.kotest.matchers.longs.shouldBeLessThan
+import io.kotest.matchers.longs.shouldBeLessThanOrEqual
 import io.kotest.matchers.shouldBe
 import org.kiworkshop.learningfpinkotlin.FunList.Cons
 import org.kiworkshop.learningfpinkotlin.FunList.Nil
@@ -137,5 +140,62 @@ class Chap5 : StringSpec({
                 map.getValue("Two").toList().shouldContainExactly(Entry("Two", 20), Entry("Two", 2))
                 map.getValue("Three").toList().shouldContainExactly(Entry("Three", 30), Entry("Three", 3))
             }
+    }
+
+    // list와 sequence의 차이, atomic kotlin에서 horizontal과 vertical로 비교한거 공유하자.
+    fun testBigIntList(
+        bigIntList: List<Int>,
+        assertImperativeWay: (Long) -> Unit,
+        assertFunctionalWay: (Long) -> Unit,
+        assertRealFunctionalWay: (Long) -> Unit
+    ) {
+        fun imperativeWay(intList: List<Int>): Int {
+            for (value in intList) {
+                val doubleValue = value * value
+                if (doubleValue < 10) {
+                    return doubleValue
+                }
+            }
+
+            throw NoSuchElementException("There is no value")
+        }
+
+        fun functionalWay(intList: List<Int>): Int = intList.map { n -> n * n }.first { n -> n < 10 }
+        fun realFunctionalWay(intList: List<Int>): Int = intList.asSequence().map { n -> n * n }.first { n -> n < 10 }
+
+        fun test(f: (List<Int>) -> Int, assert: (Long) -> Unit) {
+            System.currentTimeMillis().let { start ->
+                f(bigIntList)
+                (System.currentTimeMillis() - start).let {
+                    println("imperativeWay: $it ms")
+                    assert(it)
+                }
+            }
+        }
+
+        test(::imperativeWay, assertImperativeWay)
+        test(::functionalWay, assertFunctionalWay)
+        test(::realFunctionalWay, assertRealFunctionalWay)
+    }
+
+    "Example 5-16" {
+        println("increasing list")
+        testBigIntList(
+            bigIntList = (1..10000000).toList(),
+            assertImperativeWay = { millis: Long -> millis.shouldBeLessThanOrEqual(1) },
+            assertFunctionalWay = { millis: Long -> millis.shouldBeGreaterThan(100) },
+            assertRealFunctionalWay = { millis: Long ->
+                millis.shouldBeGreaterThan(0)
+                millis.shouldBeLessThan(10)
+            },
+        )
+
+        println("\ndecreasing list")
+        testBigIntList(
+            bigIntList = (10000000 downTo 1).toList(),
+            assertImperativeWay = { millis: Long -> millis.shouldBeLessThanOrEqual(1) },
+            assertFunctionalWay = { millis: Long -> millis.shouldBeGreaterThan(100) }, // 왜 functionalWay만 100ms가 넘지?
+            assertRealFunctionalWay = { millis: Long -> millis.shouldBeLessThanOrEqual(1) },
+        )
     }
 })
