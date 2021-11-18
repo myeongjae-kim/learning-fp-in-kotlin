@@ -3,6 +3,7 @@ package org.kiworkshop.learningfpinkotlin
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.ints.shouldBeLessThan
 import io.kotest.matchers.shouldBe
 import org.kiworkshop.learningfpinkotlin.FunList.Cons
 import org.kiworkshop.learningfpinkotlin.FunList.Nil
@@ -98,8 +99,26 @@ class Chap5 : StringSpec({
 
     "Example 5-13" {
         funListOf(1, 2, 3, 4, 5).zip(funListOf(1.0, 2.0)).toList().mapIndexed { index, pair ->
+            index.shouldBeLessThan(2)
             pair.first shouldBe (index + 1)
             pair.second shouldBe (index + 1).toDouble()
         }
+    }
+
+    data class Entry(val english: String, val numeric: Int)
+    "Example 5-14" {
+        funListOf(1, 2, 3, 4, 5).zipWith(::Pair, funListOf(1.0, 2.0)).toList().mapIndexed { index, pair ->
+            index.shouldBeLessThan(2)
+            pair.first shouldBe (index + 1)
+            pair.second shouldBe (index + 1).toDouble()
+        }
+
+        funListOf(Entry("One", 1), Entry("Two", 2), Entry("Three", 3))
+            .associate { Pair(it, it.numeric) }
+            .let { map ->
+                map[Entry("One", 1)] shouldBe 1
+                map[Entry("Two", 2)] shouldBe 2
+                map[Entry("Three", 3)] shouldBe 3
+            }
     }
 })
