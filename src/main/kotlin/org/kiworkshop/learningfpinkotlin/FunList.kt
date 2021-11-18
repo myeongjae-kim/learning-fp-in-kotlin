@@ -124,6 +124,15 @@ tailrec fun <T1, T2, R> FunList<T1>.zipWith(
     else -> getTail().zipWith(f, list.getTail(), acc.addHead(f(this.getHead(), list.getHead())))
 }
 
+// mapOf() 대신 mutableMap()을 사용하면 하나의 맵 객체를 재활용할 수 있다. 마지막에 `.toMap()`을 호출해서 immutable Map 으로 리턴하면 됨.
 fun <T, R> FunList<T>.associate(f: (T) -> Pair<T, R>): Map<T, R> = this.map(Nil, f).foldLeft(mapOf()) { acc, curr ->
     acc + curr
 }
+
+fun <T, K> FunList<T>.groupBy(f: (T) -> K): Map<K, FunList<T>> =
+    this.map(Nil) { Pair(f(it), it) }
+        .foldLeft<Pair<K, T>, MutableMap<K, FunList<T>>>(mutableMapOf()) { acc, (key, value) ->
+            acc[key] = (acc[key] ?: funListOf()).addHead(value)
+            acc
+        }.map { (key, value) -> Pair(key, value.reverse()) }
+        .toMap()

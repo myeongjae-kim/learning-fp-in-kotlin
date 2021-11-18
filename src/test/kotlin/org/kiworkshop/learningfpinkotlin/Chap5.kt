@@ -121,4 +121,21 @@ class Chap5 : StringSpec({
                 map[Entry("Three", 3)] shouldBe 3
             }
     }
+
+    "Example 5-15" {
+        funListOf(
+            Entry("Three", 30),
+            Entry("One", 1),
+            Entry("Two", 20),
+            Entry("One", 10),
+            Entry("Two", 2),
+            Entry("Three", 3)
+        )
+            .groupBy { it.english }
+            .let { map ->
+                map.getValue("One").toList().shouldContainExactly(Entry("One", 1), Entry("One", 10))
+                map.getValue("Two").toList().shouldContainExactly(Entry("Two", 20), Entry("Two", 2))
+                map.getValue("Three").toList().shouldContainExactly(Entry("Three", 30), Entry("Three", 3))
+            }
+    }
 })
