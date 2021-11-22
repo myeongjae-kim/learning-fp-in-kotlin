@@ -193,10 +193,7 @@ class Chap5 : StringSpec({
             bigIntList = (1..10000000).toList(),
             assertImperativeWay = { millis: Long -> millis.shouldBeLessThanOrEqual(1) },
             assertFunctionalWay = { millis: Long -> millis.shouldBeGreaterThan(100) },
-            assertRealFunctionalWay = { millis: Long ->
-                millis.shouldBeGreaterThan(0)
-                millis.shouldBeLessThan(10)
-            },
+            assertRealFunctionalWay = { millis: Long -> millis.shouldBeLessThan(10) },
         )
 
         println("\ndecreasing list")

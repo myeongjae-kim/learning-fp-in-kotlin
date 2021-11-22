@@ -15,7 +15,7 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("stdlib"))
+    implementation(kotlin("stdlib", Libs.Versions.kotlin))
 
     testImplementation(Libs.Test.kotest)
     testImplementation(Libs.Test.kotestAssertionsCore)

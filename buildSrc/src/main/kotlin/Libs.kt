@@ -7,10 +7,10 @@ object Libs {
     }
 
     object Versions {
-        const val kotlin = "1.5.30"
+        const val kotlin = "1.6.0"
         const val kotest = "4.6.2"
         const val mockk = "1.12.0"
-        const val ktlint = "10.1.0"
+        const val ktlint = "10.2.0"
         const val jacoco = "0.8.7"
         const val jacocoBadge = "0.2.4"
     }
