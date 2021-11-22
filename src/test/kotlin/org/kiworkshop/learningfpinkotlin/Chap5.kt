@@ -25,6 +25,15 @@ class Chap5 : StringSpec({
         return this.toList(listOf())
     }
 
+    fun <T> FunStream<T>.toList(): List<T> {
+        tailrec fun FunStream<T>.toList(acc: List<T>): List<T> = when (this) {
+            is FunStream.Nil -> acc
+            is FunStream.Cons -> this.tail().toList(acc + this.head())
+        }
+
+        return this.toList(listOf())
+    }
+
     "Example 5-1" {
         // when
         val intList: FunList<Int> = Cons(1, Cons(2, Cons(3, Cons(4, Cons(5, Nil)))))
@@ -197,5 +206,16 @@ class Chap5 : StringSpec({
             assertFunctionalWay = { millis: Long -> millis.shouldBeGreaterThan(100) }, // 왜 functionalWay만 100ms가 넘지?
             assertRealFunctionalWay = { millis: Long -> millis.shouldBeLessThanOrEqual(1) },
         )
+    }
+
+    "Example 5-17" {
+        funStreamOf(1, 2, 3).getHead() shouldBe 1
+        funStreamOf(1, 2, 3).getTail()
+            .toString() shouldBe "Cons(head=() -> T, tail=() -> org.kiworkshop.learningfpinkotlin.FunStream<T>)"
+
+        funStreamOf(1, 2, 3).getTail().toList().shouldContainExactly(2, 3)
+
+        funStreamOf(1, 2, 3).sum() shouldBe 6
+        funStreamOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).sum() shouldBe 55
     }
 })
