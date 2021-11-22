@@ -1,5 +1,6 @@
-![LINE](https://img.shields.io/badge/line--coverage-73.39%25-yellow.svg)
-![COMPLEXITY](https://img.shields.io/badge/complexity-2.30-brightgreen.svg)
+![LINE](https://img.shields.io/badge/line--coverage-98.60%25-brightgreen.svg)
+![BRANCH](https://img.shields.io/badge/branch--coverage-83.78%25-brightgreen.svg)
+![COMPLEXITY](https://img.shields.io/badge/complexity-1.46-brightgreen.svg)
 
 # [『코틀린으로 배우는 함수형 프로그래밍』](https://blog.insightbook.co.kr/2019/12/12/코틀린으로-배우는-함수형-프로그래밍/)
 
@@ -13,6 +14,9 @@ make
 
 ## Kotlin 개발환경 셋팅 (IntelliJ)
 
+- [SonarLint 플러그인](https://plugins.jetbrains.com/plugin/7973-sonarlint)
+- [Kotest 플러그인](https://plugins.jetbrains.com/plugin/14080-kotest)
+- [Kotlin 플러그인](https://plugins.jetbrains.com/plugin/6954-kotlin)
 - [Save Actions 플러그인](https://plugins.jetbrains.com/plugin/7642-save-actions) 설치
     1. Preferences -> Save Actions 에서 아래와 같이 체크
         - <img src="./img/save-actions.png" width="1094" alt="Save Actions" />
