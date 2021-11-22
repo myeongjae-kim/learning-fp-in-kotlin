@@ -215,4 +215,9 @@ class Chap5 : StringSpec({
         funStreamOf(1, 2, 3).sum() shouldBe 6
         funStreamOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10).sum() shouldBe 55
     }
+
+    "Example 5-18" {
+        funStreamOf(1, 2, 3).product() shouldBe 6
+        funStreamOf(2, 5).product() shouldBe 10
+    }
 })
