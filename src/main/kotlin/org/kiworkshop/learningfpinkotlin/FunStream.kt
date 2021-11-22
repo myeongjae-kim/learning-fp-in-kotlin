@@ -34,3 +34,16 @@ tailrec fun FunStream<Int>.product(acc: Int = 1): Int = when (this) {
     Nil -> acc
     is Cons -> getTail().product(acc * getHead())
 }
+
+tailrec fun <T> FunStream<T>.reverse(acc: FunStream<T> = Nil): FunStream<T> = when (this) {
+    Nil -> acc
+    is Cons -> getTail().reverse(Cons(this.head) { acc })
+}
+
+fun <T> FunStream<T>.appendTail(value: T): FunStream<T> = when (this) {
+    Nil -> Cons({ value }) { Nil }
+    is Cons -> Cons(this.head) { getTail().appendTail(value) }
+}
+
+fun <T> FunStream<T>.appendTailTailrec(value: T): FunStream<T> =
+    Cons({ value }) { this.reverse() }.reverse()

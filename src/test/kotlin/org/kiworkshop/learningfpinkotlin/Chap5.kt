@@ -17,21 +17,21 @@ class Chap5 : StringSpec({
     val list = funListOf(1, 2, 3, 4, 5)
 
     fun <T> FunList<T>.toList(): List<T> {
-        tailrec fun FunList<T>.toList(acc: List<T>): List<T> = when (this) {
+        tailrec fun FunList<T>.toList(acc: MutableList<T>): MutableList<T> = when (this) {
             is Nil -> acc
-            is Cons -> this.tail.toList(acc + this.head)
+            is Cons -> this.tail.toList(acc.add(this.head).let { acc })
         }
 
-        return this.toList(listOf())
+        return this.toList(mutableListOf())
     }
 
     fun <T> FunStream<T>.toList(): List<T> {
-        tailrec fun FunStream<T>.toList(acc: List<T>): List<T> = when (this) {
+        tailrec fun FunStream<T>.toList(acc: MutableList<T>): MutableList<T> = when (this) {
             is FunStream.Nil -> acc
-            is FunStream.Cons -> this.tail().toList(acc + this.head())
+            is FunStream.Cons -> this.tail().toList(acc.add(this.head()).let { acc })
         }
 
-        return this.toList(listOf())
+        return this.toList(mutableListOf())
     }
 
     "Example 5-1" {
@@ -219,5 +219,10 @@ class Chap5 : StringSpec({
     "Example 5-18" {
         funStreamOf(1, 2, 3).product() shouldBe 6
         funStreamOf(2, 5).product() shouldBe 10
+    }
+
+    "Example 5-19" {
+        funStreamOf(1, 2, 3).appendTail(4).toList().shouldContainExactly(1, 2, 3, 4)
+        funStreamOf(1, 2, 3).appendTailTailrec(4).toList().shouldContainExactly(1, 2, 3, 4)
     }
 })
