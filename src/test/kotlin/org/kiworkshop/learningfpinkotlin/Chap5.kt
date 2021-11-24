@@ -13,6 +13,8 @@ import org.kiworkshop.learningfpinkotlin.FunList.Nil
 
 class Chap5 : StringSpec({
     // 연습문제 5-7, takeWhile에서 element가 모두 p를 만족하지 못했을 때 원본 리스트가 아니라 빈 리스트를 내보내야 하는거 아닌가?
+    // 142쪽에 IntRange를 FunStream<Int>로 변환하는 코드 작성하기가 꽤 머리아프다.
+    // IntRange를 FunList<Int>로 변환하는 코드를 꼭 재귀를 사용해서 구현해보자.
 
     val list = funListOf(1, 2, 3, 4, 5)
 
@@ -231,5 +233,73 @@ class Chap5 : StringSpec({
 
     "Example 5-21" {
         funStreamOf(1, 2, 3).map { it * 2.0 }.toList().shouldContainExactly(2.0, 4.0, 6.0)
+    }
+
+    "performanceTest" {
+        fun funListWay(intList: FunList<Int>): Int = intList
+            .map { n -> n * n }
+            .filter { n -> n < 1000000 }
+            .map { n -> n - 2 }
+            .filter { n -> n < 1000 }
+            .map { n -> n * 10 }
+            .getHead()
+
+        fun funStreamWay(intList: FunStream<Int>): Int = intList
+            .map { n -> n * n }
+            .filter { n -> n < 1000000 }
+            .map { n -> n - 2 }
+            .filter { n -> n < 1000 }
+            .map { n -> n * 10 }
+            .getHead()
+
+        fun IntRange.toFunList(): FunList<Int> {
+            tailrec fun IntIterator.toFunList(acc: FunList<Int> = Nil): FunList<Int> =
+                if (this.hasNext()) {
+                    toFunList(Cons(this.nextInt(), acc))
+                } else {
+                    acc
+                }
+
+            return this.reversed().iterator().toFunList()
+        }
+
+        fun IntRange.toFunStream(): FunStream<Int> {
+            fun IntIterator.toFunStream(): FunStream<Int> {
+                if (!this.hasNext()) {
+                    return FunStream.Nil
+                }
+
+                val next = this.nextInt()
+                return if (this.hasNext())
+                    FunStream.Cons({ next }) { toFunStream() }
+                else
+                    FunStream.Cons({ next }) { FunStream.Nil }
+            }
+
+            return this.iterator().toFunStream()
+        }
+
+        (1..3).toFunList().toList().shouldContainExactly(1, 2, 3)
+        (1..3).toFunStream().toList().shouldContainExactly(1, 2, 3)
+        (0 until 0).toFunStream().toList().shouldBeEmpty()
+
+        fun howMuchMillsItTakes(testName: String, runnable: () -> Unit): Long {
+            return System.currentTimeMillis().let { start ->
+                println(testName)
+                runnable()
+                val calculationMillis = (System.currentTimeMillis() - start)
+                println("$calculationMillis ms")
+                calculationMillis
+            }
+        }
+
+        val bigIntList = (1..10000000).toFunList()
+        val bigIntStream = (1..10000000).toFunStream()
+
+//        이 테스트 하나만 돌릴때는 괜찮은데 전체 테스트를 돌리면 메모리가 부족해서 예외가 발생한다.
+//        howMuchMillsItTakes("funListWay") { funListWay(bigIntList) } shouldBeGreaterThan 1000
+
+        println()
+        howMuchMillsItTakes("funStreamWay") { funStreamWay(bigIntStream) } shouldBeLessThan 10
     }
 })
