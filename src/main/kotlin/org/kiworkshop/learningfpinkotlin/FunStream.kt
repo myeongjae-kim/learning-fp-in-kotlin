@@ -42,8 +42,13 @@ tailrec fun <T> FunStream<T>.reverse(acc: FunStream<T> = Nil): FunStream<T> = wh
 
 fun <T> FunStream<T>.appendTail(value: T): FunStream<T> = when (this) {
     Nil -> Cons({ value }) { Nil }
-    is Cons -> Cons(this.head) { getTail().appendTail(value) }
+    is Cons -> Cons(this.head) { this.tail().appendTail(value) }
 }
 
-fun <T> FunStream<T>.appendTailTailrec(value: T): FunStream<T> =
-    Cons({ value }) { this.reverse() }.reverse()
+fun <T> FunStream<T>.filter(p: (T) -> Boolean): FunStream<T> = when (this) {
+    Nil -> this
+    is Cons -> if (p(this.head()))
+        Cons({ this.head() }) { this.tail().filter(p) }
+    else
+        this.tail().filter(p)
+}

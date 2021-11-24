@@ -223,6 +223,9 @@ class Chap5 : StringSpec({
 
     "Example 5-19" {
         funStreamOf(1, 2, 3).appendTail(4).toList().shouldContainExactly(1, 2, 3, 4)
-        funStreamOf(1, 2, 3).appendTailTailrec(4).toList().shouldContainExactly(1, 2, 3, 4)
+    }
+
+    "Example 5-20" {
+        funStreamOf(1, 2, 3).filter { it and 1 == 1 }.toList().shouldContainExactly(1, 3)
     }
 })
