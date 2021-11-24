@@ -228,4 +228,8 @@ class Chap5 : StringSpec({
     "Example 5-20" {
         funStreamOf(1, 2, 3).filter { it and 1 == 1 }.toList().shouldContainExactly(1, 3)
     }
+
+    "Example 5-21" {
+        funStreamOf(1, 2, 3).map { it * 2.0 }.toList().shouldContainExactly(2.0, 4.0, 6.0)
+    }
 })
