@@ -302,4 +302,9 @@ class Chap5 : StringSpec({
         println()
         howMuchMillsItTakes("funStreamWay") { funStreamWay(bigIntStream) } shouldBeLessThan 10
     }
+
+    "Example 5-22" {
+        val infiniteValue = generateFunStream(0) { it + 5 }
+        infiniteValue.take(5).toList().shouldContainExactly(0, 5, 10, 15, 20)
+    }
 })

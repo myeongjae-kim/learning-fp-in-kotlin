@@ -57,3 +57,25 @@ fun <T, R> FunStream<T>.map(f: (T) -> R): FunStream<R> = when (this) {
     Nil -> Nil
     is Cons -> Cons({ f(this.head()) }) { this.tail().map(f) }
 }
+
+fun <T> generateFunStream(seed: T, generate: (T) -> T): FunStream<T> =
+    Cons({ seed }) { generateFunStream(generate(seed), generate) }
+
+tailrec fun <T> FunStream<T>.forEach(f: (T) -> Unit): Unit = when (this) {
+    Nil -> Unit
+    is Cons -> {
+        f(head())
+        tail().forEach(f)
+    }
+}
+
+fun <T> FunStream<T>.take(n: Int): FunStream<T> {
+    if (n == 0) {
+        return Nil
+    }
+
+    return when (this) {
+        Nil -> Nil
+        is Cons -> Cons({ head() }, { tail().take(n - 1) })
+    }
+}
