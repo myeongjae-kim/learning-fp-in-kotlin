@@ -311,5 +311,10 @@ class Chap5 : StringSpec({
     "Example 5-23" {
         funListOf(1, 2, 3).toString("") shouldBe "[1, 2, 3]"
         funListOf('a', 'b', 'c').toString("") shouldBe "[a, b, c]"
+        funListOf<Int>().toString("") shouldBe "[]"
+
+        funListOf(1, 2, 3).toStringByFoldLeft() shouldBe "[1, 2, 3]"
+        funListOf('a', 'b', 'c').toStringByFoldLeft() shouldBe "[a, b, c]"
+        funListOf<Int>().toStringByFoldLeft() shouldBe "[]"
     }
 })

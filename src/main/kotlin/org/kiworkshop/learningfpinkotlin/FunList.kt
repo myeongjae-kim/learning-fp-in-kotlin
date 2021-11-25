@@ -139,6 +139,9 @@ fun <T, K> FunList<T>.groupBy(f: (T) -> K): Map<K, FunList<T>> =
 
 private const val DELIMITER = ", "
 tailrec fun <T> FunList<T>.toString(acc: String): String = when (this) {
-    Nil -> "[" + acc.let { if (it.startsWith(DELIMITER)) it.substring(DELIMITER.length) else it } + "]"
+    Nil -> "[${acc.drop(DELIMITER.length)}]"
     is Cons -> this.tail.toString("$acc$DELIMITER${this.head}")
 }
+
+fun <T> FunList<T>.toStringByFoldLeft(): String =
+    "[${foldLeft("") { acc, curr -> "$acc$DELIMITER$curr" }.drop(DELIMITER.length)}]"
