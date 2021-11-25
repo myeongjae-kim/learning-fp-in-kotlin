@@ -10,6 +10,7 @@ import io.kotest.matchers.longs.shouldBeLessThanOrEqual
 import io.kotest.matchers.shouldBe
 import org.kiworkshop.learningfpinkotlin.FunList.Cons
 import org.kiworkshop.learningfpinkotlin.FunList.Nil
+import kotlin.math.sqrt
 
 class Chap5 : StringSpec({
     // 연습문제 5-7, takeWhile에서 element가 모두 p를 만족하지 못했을 때 원본 리스트가 아니라 빈 리스트를 내보내야 하는거 아닌가?
@@ -316,5 +317,32 @@ class Chap5 : StringSpec({
         funListOf(1, 2, 3).toStringByFoldLeft() shouldBe "[1, 2, 3]"
         funListOf('a', 'b', 'c').toStringByFoldLeft() shouldBe "[a, b, c]"
         funListOf<Int>().toStringByFoldLeft() shouldBe "[]"
+    }
+
+    "Example 5-24" {
+        tailrec fun f(target: Double = 1000.0, nextNaturalNumber: Int = 1, sum: Double = 0.0, count: Int = 0): Int =
+            if (sum > target) count
+            else f(target, nextNaturalNumber + 1, sqrt(nextNaturalNumber.toDouble()) + sum, count + 1)
+
+        f(-1.0) shouldBe 0
+        f(0.0) shouldBe 1
+        f(0.999999) shouldBe 1
+        f(1.0) shouldBe 2
+        f(2.4) shouldBe 2
+        f(1 + 1.4 + 1.7) shouldBe 3
+        f(1000.0) shouldBe 131
+
+        // imperative
+        var sum = 0.0
+        var count = 0
+        var nextNaturalNumber = 1
+        val target = 1000.0
+
+        while (sum < target) {
+            sum += sqrt(nextNaturalNumber.toDouble())
+            nextNaturalNumber++
+            count++
+        }
+        count shouldBe 131
     }
 })
