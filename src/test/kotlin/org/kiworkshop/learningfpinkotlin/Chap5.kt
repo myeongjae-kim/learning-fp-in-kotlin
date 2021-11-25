@@ -307,4 +307,9 @@ class Chap5 : StringSpec({
         val infiniteValue = generateFunStream(0) { it + 5 }
         infiniteValue.take(5).toList().shouldContainExactly(0, 5, 10, 15, 20)
     }
+
+    "Example 5-23" {
+        funListOf(1, 2, 3).toString("") shouldBe "[1, 2, 3]"
+        funListOf('a', 'b', 'c').toString("") shouldBe "[a, b, c]"
+    }
 })

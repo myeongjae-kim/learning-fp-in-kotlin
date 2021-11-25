@@ -136,3 +136,9 @@ fun <T, K> FunList<T>.groupBy(f: (T) -> K): Map<K, FunList<T>> =
             acc
         }.map { (key, value) -> Pair(key, value.reverse()) }
         .toMap()
+
+private const val DELIMITER = ", "
+tailrec fun <T> FunList<T>.toString(acc: String): String = when (this) {
+    Nil -> "[" + acc.let { if (it.startsWith(DELIMITER)) it.substring(DELIMITER.length) else it } + "]"
+    is Cons -> this.tail.toString("$acc$DELIMITER${this.head}")
+}
