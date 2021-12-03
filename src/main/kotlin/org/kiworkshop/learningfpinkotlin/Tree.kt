@@ -12,6 +12,10 @@ sealed class Tree<out T : Comparable<@UnsafeVariance T>> {
         Tree<T>() {
         override fun toString(): String = "[${this.left}, ${this.value}, ${this.right}]"
     }
+
+    companion object {
+        fun <T : Comparable<T>> empty(): Tree<T> = EmptyTree
+    }
 }
 
 fun <T : Comparable<T>> Tree<T>.insert(elem: T): Tree<T> = when (this) {

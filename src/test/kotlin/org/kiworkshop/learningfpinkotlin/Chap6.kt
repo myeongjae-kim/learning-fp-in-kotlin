@@ -1,5 +1,6 @@
 package org.kiworkshop.learningfpinkotlin
 
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.Tuple3
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
@@ -31,7 +32,13 @@ class Chap6 : StringSpec({
         )
     ).forEach { (condition, list, expectedString) ->
         "Example 2, $condition" {
-            list.fold(EmptyTree as Tree<Int>) { acc, curr -> acc.insert(curr) }.toString() shouldBe expectedString
+            list.fold(Tree.empty<Int>()) { acc, curr -> acc.insert(curr) }.toString() shouldBe expectedString
+        }
+    }
+
+    "Example 3" {
+        shouldThrow<StackOverflowError> {
+            (1..100000).fold(Tree.empty<Int>()) { acc, curr -> acc.insert(curr) }
         }
     }
 })
