@@ -3,6 +3,8 @@ package org.kiworkshop.learningfpinkotlin
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.Tuple3
 import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.booleans.shouldBeFalse
+import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.shouldBe
 import org.kiworkshop.learningfpinkotlin.Tree.EmptyTree
 import org.kiworkshop.learningfpinkotlin.Tree.Node
@@ -39,6 +41,24 @@ class Chap6 : StringSpec({
     "Example 3" {
         shouldThrow<StackOverflowError> {
             (1..100000).fold(Tree.empty<Int>()) { acc, curr -> acc.insert(curr) }
+        }
+    }
+
+    "Example 4" {
+        val tree = listOf(4, 2, 6, 1, 3, 5, 7).fold(Tree.empty<Int>()) { acc, curr -> acc.insert(curr) }
+        tree.insertTailrec(8).toString() shouldBe ""
+    }
+
+    "Example 5" {
+        val ints = listOf(4, 2, 6, 1, 3, 5, 7)
+        val tree = ints.fold(Tree.empty<Int>()) { acc, curr -> acc.insert(curr) }
+
+        ints.forEach {
+            tree.contains(it).shouldBeTrue()
+        }
+
+        listOf(0, 8, 9, 1100).forEach {
+            tree.contains(it).shouldBeFalse()
         }
     }
 })
