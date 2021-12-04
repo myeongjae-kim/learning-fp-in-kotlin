@@ -99,4 +99,10 @@ class Chap8 : StringSpec({
         val square: (Int) -> Int = { it * it }
         FunList.pure(square) apply FunList.pure(3) shouldBe FunList.pure(square(3))
     }
+
+    "Example 10" {
+        val af = funListOf<(Int) -> Int>({ it * it })
+
+        (af apply FunList.pure(3)) shouldBe (FunList.pure(of<Int, Int>(3)) apply af)
+    }
 })
