@@ -19,24 +19,6 @@ class Chap5 : StringSpec({
 
     val list = funListOf(1, 2, 3, 4, 5)
 
-    fun <T> FunList<T>.toList(): List<T> {
-        tailrec fun FunList<T>.toList(acc: MutableList<T>): MutableList<T> = when (this) {
-            is Nil -> acc
-            is Cons -> this.tail.toList(acc.add(this.head).let { acc })
-        }
-
-        return this.toList(mutableListOf())
-    }
-
-    fun <T> FunStream<T>.toList(): List<T> {
-        tailrec fun FunStream<T>.toList(acc: MutableList<T>): MutableList<T> = when (this) {
-            is FunStream.Nil -> acc
-            is FunStream.Cons -> this.tail().toList(acc.add(this.head()).let { acc })
-        }
-
-        return this.toList(mutableListOf())
-    }
-
     "Example 5-1" {
         // when
         val intList: FunList<Int> = Cons(1, Cons(2, Cons(3, Cons(4, Cons(5, Nil)))))

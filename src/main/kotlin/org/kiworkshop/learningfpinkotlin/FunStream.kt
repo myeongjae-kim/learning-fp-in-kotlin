@@ -79,3 +79,12 @@ fun <T> FunStream<T>.take(n: Int): FunStream<T> {
         is Cons -> Cons({ head() }, { tail().take(n - 1) })
     }
 }
+
+fun <T> FunStream<T>.toList(): List<T> {
+    tailrec fun FunStream<T>.toList(acc: MutableList<T>): MutableList<T> = when (this) {
+        is Nil -> acc
+        is Cons -> this.tail().toList(acc.add(this.head()).let { acc })
+    }
+
+    return this.toList(mutableListOf())
+}

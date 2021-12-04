@@ -4,9 +4,14 @@ import org.kiworkshop.learningfpinkotlin.FunList.Cons
 import org.kiworkshop.learningfpinkotlin.FunList.Nil
 import kotlin.math.max
 
-sealed class FunList<out T> {
-    object Nil : FunList<Nothing>()
-    data class Cons<out T>(val head: T, val tail: FunList<T>) : FunList<T>()
+sealed class FunList<out T> : Functor<T> {
+    object Nil : FunList<Nothing>() {
+        override fun <B> fmap(f: (Nothing) -> B): FunList<B> = Nil
+    }
+
+    data class Cons<out T>(val head: T, val tail: FunList<T>) : FunList<T>() {
+        override fun <B> fmap(f: (T) -> B): FunList<B> = Cons(f(this.head), this.tail.fmap(f) as FunList<B>)
+    }
 }
 
 fun <T> funListOf(vararg elements: T): FunList<T> = elements.toFunList()
@@ -145,3 +150,12 @@ tailrec fun <T> FunList<T>.toString(acc: String): String = when (this) {
 
 fun <T> FunList<T>.toStringByFoldLeft(): String =
     "[${foldLeft("") { acc, curr -> "$acc$DELIMITER$curr" }.drop(DELIMITER.length)}]"
+
+fun <T> FunList<T>.toList(): List<T> {
+    tailrec fun FunList<T>.toList(acc: MutableList<T>): MutableList<T> = when (this) {
+        is Nil -> acc
+        is Cons -> this.tail.toList(acc.add(this.head).let { acc })
+    }
+
+    return this.toList(mutableListOf())
+}
