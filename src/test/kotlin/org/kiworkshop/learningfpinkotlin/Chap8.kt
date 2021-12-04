@@ -77,4 +77,21 @@ class Chap8 : StringSpec({
                 apply Right(20)
             ).toString() shouldBe "Right(200)"
     }
+
+    "Example 7" {
+        val identity: (Int) -> Int = { it }
+        val list = funListOf(1)
+        (FunList.pure(identity) apply list) shouldBe list
+    }
+
+    "Example 8" {
+        val expected = funListOf(169)
+
+        val af1 = funListOf<(Int) -> Int>({ it * it })
+        val af2 = funListOf<(Int) -> Int>({ it + 10 })
+        val af3 = funListOf(3)
+
+        (FunList.pure(compose<Int, Int, Int>().curried()) apply af1 apply af2 apply af3) shouldBe expected
+        (af1 apply (af2 apply af3)).shouldBe(expected)
+    }
 })

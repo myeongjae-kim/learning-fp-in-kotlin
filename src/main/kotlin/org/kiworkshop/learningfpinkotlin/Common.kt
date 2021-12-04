@@ -51,6 +51,10 @@ fun <P, R> ((P) -> R).toPartialFunction(definedAt: (P) -> Boolean): PartialFunct
     PartialFunction(definedAt, this)
 
 infix fun <F, G, R> ((F) -> R).compose(g: (G) -> F): (G) -> R = { gInput: G -> this(g(gInput)) }
+fun <P1, P2, P3> compose() = { f: (P2) -> P3, g: (P1) -> P2, v: P1 -> f(g(v)) }
 
 fun <P1, P2, R> ((P1, P2) -> R).curried(): (P1) -> (P2) -> R =
     { p1 -> { p2 -> this(p1, p2) } }
+
+fun <P1, P2, P3, R> ((P1, P2, P3) -> R).curried(): (P1) -> (P2) -> (P3) -> R =
+    { p1 -> { p2 -> { p3 -> this(p1, p2, p3) } } }
