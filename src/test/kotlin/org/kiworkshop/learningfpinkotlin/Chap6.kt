@@ -6,20 +6,20 @@ import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.shouldBe
-import org.kiworkshop.learningfpinkotlin.Tree.EmptyTree
-import org.kiworkshop.learningfpinkotlin.Tree.Node
+import org.kiworkshop.learningfpinkotlin.BinaryTree.BinaryNode
+import org.kiworkshop.learningfpinkotlin.BinaryTree.EmptyBinaryTree
 
 class Chap6 : StringSpec({
-    fun <T : Comparable<T>> List<T>.toTree(): Tree<T> = fold(Tree.empty()) { acc, curr -> acc.insert(curr) }
+    fun <T : Comparable<T>> List<T>.toTree(): BinaryTree<T> = fold(BinaryTree.empty()) { acc, curr -> acc.insert(curr) }
 
     "Example 1" {
-        EmptyTree.toString() shouldBe "E"
-        Node(1).toString() shouldBe "[E, 1, E]"
+        EmptyBinaryTree.toString() shouldBe "E"
+        BinaryNode(1).toString() shouldBe "[E, 1, E]"
 
-        Node(
+        BinaryNode(
             1,
-            Node(2, Node(4)),
-            Node(3, EmptyTree, Node(5))
+            BinaryNode(2, BinaryNode(4)),
+            BinaryNode(3, EmptyBinaryTree, BinaryNode(5))
         ).toString() shouldBe "[[[E, 4, E], 2, E], 1, [E, 3, [E, 5, E]]]"
     }
 
@@ -47,24 +47,24 @@ class Chap6 : StringSpec({
     }
 
     "testStackToTree" {
-        stackToTree<Int>(listOf()) shouldBe EmptyTree
-        stackToTree(listOf(Pair(Node(1), Direction.LEFT))).toString() shouldBe "[E, 1, E]"
+        stackToTree<Int>(listOf()) shouldBe EmptyBinaryTree
+        stackToTree(listOf(Pair(BinaryNode(1), Direction.LEFT))).toString() shouldBe "[E, 1, E]"
         stackToTree(
             listOf(
-                Pair(Node(1), Direction.LEFT),
-                Pair(Node(2), Direction.LEFT)
+                Pair(BinaryNode(1), Direction.LEFT),
+                Pair(BinaryNode(2), Direction.LEFT)
             )
         ).toString() shouldBe "[[E, 1, E], 2, E]"
         stackToTree(
             listOf(
-                Pair(Node(1), Direction.LEFT),
-                Pair(Node(2, EmptyTree, Node(3)), Direction.LEFT)
+                Pair(BinaryNode(1), Direction.LEFT),
+                Pair(BinaryNode(2, EmptyBinaryTree, BinaryNode(3)), Direction.LEFT)
             )
         ).toString() shouldBe "[[E, 1, E], 2, [E, 3, E]]"
         stackToTree(
             listOf(
-                Pair(Node(1), Direction.RIGHT),
-                Pair(Node(2, EmptyTree, Node(3)), Direction.LEFT)
+                Pair(BinaryNode(1), Direction.RIGHT),
+                Pair(BinaryNode(2, EmptyBinaryTree, BinaryNode(3)), Direction.LEFT)
             )
         ).toString() shouldBe "[E, 2, [E, 1, E]]"
     }
@@ -78,7 +78,7 @@ class Chap6 : StringSpec({
             .shouldBe("[E, 3, [E, 2, [E, 1, E]]]")
         reverse(list, funListOf(Direction.RIGHT, Direction.RIGHT)).toString()
             .shouldBe("[E, 2, [E, 1, E]]")
-        reverse(EmptyTree, funListOf()) shouldBe EmptyTree
+        reverse(EmptyBinaryTree, funListOf()) shouldBe EmptyBinaryTree
 
         val completeTree = listOf(4, 2, 6, 1, 3, 5, 7).toTree()
         completeTree.toString() shouldBe "[[[E, 1, E], 2, [E, 3, E]], 4, [[E, 5, E], 6, [E, 7, E]]]"

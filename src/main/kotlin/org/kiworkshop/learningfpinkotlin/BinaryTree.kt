@@ -1,29 +1,29 @@
 package org.kiworkshop.learningfpinkotlin
 
-import org.kiworkshop.learningfpinkotlin.Tree.EmptyTree
-import org.kiworkshop.learningfpinkotlin.Tree.Node
+import org.kiworkshop.learningfpinkotlin.BinaryTree.EmptyBinaryTree
+import org.kiworkshop.learningfpinkotlin.BinaryTree.BinaryNode
 
-sealed class Tree<out T : Comparable<@UnsafeVariance T>> {
-    object EmptyTree : Tree<Nothing>() {
+sealed class BinaryTree<out T : Comparable<@UnsafeVariance T>> {
+    object EmptyBinaryTree : BinaryTree<Nothing>() {
         override fun toString(): String = "E"
     }
 
-    data class Node<T : Comparable<T>>(val value: T, val left: Tree<T> = EmptyTree, val right: Tree<T> = EmptyTree) :
-        Tree<T>() {
+    data class BinaryNode<T : Comparable<T>>(val value: T, val left: BinaryTree<T> = EmptyBinaryTree, val right: BinaryTree<T> = EmptyBinaryTree) :
+        BinaryTree<T>() {
         override fun toString(): String = "[${this.left}, ${this.value}, ${this.right}]"
     }
 
     companion object {
-        fun <T : Comparable<T>> empty(): Tree<T> = EmptyTree
+        fun <T : Comparable<T>> empty(): BinaryTree<T> = EmptyBinaryTree
     }
 }
 
-fun <T : Comparable<T>> Tree<T>.insert(elem: T): Tree<T> = when (this) {
-    EmptyTree -> Node(elem)
-    is Node -> if (elem < this.value) {
-        Node(this.value, this.left.insert(elem), this.right)
+fun <T : Comparable<T>> BinaryTree<T>.insert(elem: T): BinaryTree<T> = when (this) {
+    EmptyBinaryTree -> BinaryNode(elem)
+    is BinaryNode -> if (elem < this.value) {
+        BinaryNode(this.value, this.left.insert(elem), this.right)
     } else {
-        Node(this.value, this.left, this.right.insert(elem))
+        BinaryNode(this.value, this.left, this.right.insert(elem))
     }
 }
 
@@ -33,21 +33,21 @@ enum class Direction {
 
 // historyStack의 개수는 log(n)개니까 이정도는 재귀로 돌려도 괜찮겠지.. 라고 생각했지만 skewd tree에서는 history도 O(n)개일 테니까
 // 결국 여기서 stackoverflow 발생하겠는데?
-fun <T : Comparable<T>> stackToTree(stack: List<Pair<Tree<T>, Direction>>): Tree<T> {
+fun <T : Comparable<T>> stackToTree(stack: List<Pair<BinaryTree<T>, Direction>>): BinaryTree<T> {
     return when {
-        stack.isEmpty() -> EmptyTree
+        stack.isEmpty() -> EmptyBinaryTree
         stack.size == 1 -> stack.head().first
         else -> {
             val tree = stackToTree(stack.tail())
             val (node, direction) = stack.head()
 
             return when (tree) {
-                EmptyTree -> EmptyTree
-                is Node -> {
+                EmptyBinaryTree -> EmptyBinaryTree
+                is BinaryNode -> {
                     if (direction == Direction.LEFT)
-                        Node(tree.value, node, tree.right)
+                        BinaryNode(tree.value, node, tree.right)
                     else
-                        Node(tree.value, tree.left, node)
+                        BinaryNode(tree.value, tree.left, node)
                 }
             }
         }
@@ -55,17 +55,17 @@ fun <T : Comparable<T>> stackToTree(stack: List<Pair<Tree<T>, Direction>>): Tree
 }
 
 tailrec fun <T : Comparable<T>> reverse(
-    tree: Tree<T>,
+    binaryTree: BinaryTree<T>,
     directions: FunList<Direction>,
-    acc: Tree<T> = EmptyTree
-): Tree<T> {
-    return when (tree) {
-        EmptyTree -> acc
-        is Node -> when (directions) {
+    acc: BinaryTree<T> = EmptyBinaryTree
+): BinaryTree<T> {
+    return when (binaryTree) {
+        EmptyBinaryTree -> acc
+        is BinaryNode -> when (directions) {
             FunList.Nil -> acc
             is FunList.Cons -> when (directions.head) {
-                Direction.LEFT -> reverse(tree.left, directions.tail, Node(tree.value, acc, tree.right))
-                Direction.RIGHT -> reverse(tree.right, directions.tail, Node(tree.value, tree.left, acc))
+                Direction.LEFT -> reverse(binaryTree.left, directions.tail, BinaryNode(binaryTree.value, acc, binaryTree.right))
+                Direction.RIGHT -> reverse(binaryTree.right, directions.tail, BinaryNode(binaryTree.value, binaryTree.left, acc))
             }
         }
     }
@@ -77,10 +77,10 @@ tailrec fun <T : Comparable<T>> reverse(
 // history를 저장해놓고 자리 찾으면 히스토리 거꾸로 꺼내면서 새로운 노드만 붙여주면.. 되겠다.
 // list와 tree의 차이는.. 방향이 있다는 것. 어디로 가야할지 길만 정해주면 reverse를 만들 수 있다.
 // fun <T : Comparable<T>> reverse(tree: Tree<T>, directions: FunList<Direction>): Tree<T> 구현하기
-fun <T : Comparable<T>> Tree<T>.insertTailrec(elem: T): Tree<T> {
-    tailrec fun <T : Comparable<T>> Tree<T>.insertTailrec(elem: T, stack: List<Tree<T>>): Tree<T> = when (this) {
-        EmptyTree -> EmptyTree
-        is Node -> if (elem < this.value) {
+fun <T : Comparable<T>> BinaryTree<T>.insertTailrec(elem: T): BinaryTree<T> {
+    tailrec fun <T : Comparable<T>> BinaryTree<T>.insertTailrec(elem: T, stack: List<BinaryTree<T>>): BinaryTree<T> = when (this) {
+        EmptyBinaryTree -> EmptyBinaryTree
+        is BinaryNode -> if (elem < this.value) {
             this.left.insertTailrec(elem, listOf(this) + stack)
         } else {
             this.right.insertTailrec(elem, listOf(this) + stack)
@@ -90,9 +90,9 @@ fun <T : Comparable<T>> Tree<T>.insertTailrec(elem: T): Tree<T> {
     return insertTailrec(elem, listOf())
 }
 
-tailrec fun <T : Comparable<T>> Tree<T>.contains(elem: T): Boolean = when (this) {
-    EmptyTree -> false
-    is Node -> when {
+tailrec fun <T : Comparable<T>> BinaryTree<T>.contains(elem: T): Boolean = when (this) {
+    EmptyBinaryTree -> false
+    is BinaryNode -> when {
         elem < this.value -> this.left.contains(elem)
         elem > this.value -> this.right.contains(elem)
         elem == this.value -> true
