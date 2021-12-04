@@ -55,4 +55,26 @@ class Chap8 : StringSpec({
         funListOf<(Int) -> Int>({ it * 5 }, { it + 10 }).myZipTailrec(funListOf(10, 20, 30))
             .toString("") shouldBe "[50, 30]"
     }
+
+    "EitherTest" {
+        Right(10).fmap { it * 2 }.toString() shouldBe "Right(20)"
+        Left("error").fmap { x: String -> "$x log" }.toString() shouldBe "Left(error)"
+
+        Either.pure(10).toString() shouldBe "Right(10)"
+        Either.pure { x: Int -> x * 2 }.toString() shouldBe "Right((kotlin.Int) -> kotlin.Int)"
+
+        (Either.pure { x: Int -> x * 2 } apply Left("error")).toString() shouldBe "Left(error)"
+        (Either.pure { x: Int -> x * 2 } apply Right(10)).toString() shouldBe "Right(20)"
+
+        (
+            Either.pure({ x: Int, y: Int -> x * y }.curried())
+                apply Left("error")
+                apply Right(10)
+            ).toString() shouldBe "Left(error)"
+        (
+            Either.pure({ x: Int, y: Int -> x * y }.curried())
+                apply Right(10)
+                apply Right(20)
+            ).toString() shouldBe "Right(200)"
+    }
 })
