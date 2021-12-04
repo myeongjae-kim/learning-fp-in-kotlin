@@ -12,4 +12,11 @@ class Chap8 : StringSpec({
         listOfPartiallyAppliedFunctions.fmap { it -> it(0) }.shouldBe(funListOf(0, 0, 0, 0))
         listOfPartiallyAppliedFunctions.fmap { it -> it(10) }.shouldBe(funListOf(10, 20, 30, 40))
     }
+
+    "Example 2" {
+        funListOf(1, 2).concat(funListOf(3, 4)) shouldBe funListOf(1, 2, 3, 4)
+
+        funListOf(1, 2, 3).apply(funListOf({ it * it })) shouldBe funListOf(1, 4, 9)
+        funListOf(1, 2, 3).apply(funListOf({ it * it }, { it * 10 })) shouldBe funListOf(1, 4, 9, 10, 20, 30)
+    }
 })

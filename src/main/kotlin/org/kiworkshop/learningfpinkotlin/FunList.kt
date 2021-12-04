@@ -4,9 +4,18 @@ import org.kiworkshop.learningfpinkotlin.FunList.Cons
 import org.kiworkshop.learningfpinkotlin.FunList.Nil
 import kotlin.math.max
 
-sealed class FunList<out T> : Functor<T> {
+sealed class FunList<out T> : Applicative<T> {
+
+    companion object {
+        fun <V> pure(value: V): Applicative<V> = Cons(value, Nil)
+    }
+
+    override fun <V> pure(value: V): Applicative<V> = pure(value)
+
     object Nil : FunList<Nothing>() {
         override fun <B> fmap(f: (Nothing) -> B): FunList<B> = Nil
+
+        override fun <B> apply(ff: Applicative<(Nothing) -> B>): FunList<B> = Nil
     }
 
     data class Cons<out T>(val head: T, val tail: FunList<T>) : FunList<T>() {
@@ -16,6 +25,15 @@ sealed class FunList<out T> : Functor<T> {
                 is Cons -> fmap(list.tail, acc.addHead(f(list.head)))
             }
             return fmap(this, Nil)
+        }
+
+        // 실제로는 매개변수를 ff: FunList<(T) -> B>로 해야하지만 변성 문제때문에 매개변수가 FunList가 아닌 경우 Nil을 내보내도록 한다.
+        override fun <B> apply(ff: Applicative<(T) -> B>): FunList<B> = when (ff) {
+            is FunList -> {
+                (ff.fmap { this.fmap(it) } as FunList<FunList<B>>)
+                    .foldLeft(Nil as FunList<B>) { acc, curr -> acc.concat(curr) }
+            }
+            else -> Nil
         }
     }
 }
@@ -164,4 +182,20 @@ fun <T> FunList<T>.toList(): List<T> {
     }
 
     return this.toList(mutableListOf())
+}
+
+fun <T> FunList<T>.concat(other: FunList<T>): FunList<T> {
+    tailrec fun <T> FunList<T>.concatRecur(other: FunList<T>): FunList<T> {
+        return when (this) {
+            Nil -> other
+            is Cons -> when (other) {
+                Nil -> this
+                is Cons -> {
+                    this.tail.concatRecur(other.addHead(this.head))
+                }
+            }
+        }
+    }
+
+    return this.reverse().concatRecur(other)
 }
