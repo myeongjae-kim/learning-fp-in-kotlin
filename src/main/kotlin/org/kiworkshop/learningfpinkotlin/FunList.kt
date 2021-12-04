@@ -10,7 +10,13 @@ sealed class FunList<out T> : Functor<T> {
     }
 
     data class Cons<out T>(val head: T, val tail: FunList<T>) : FunList<T>() {
-        override fun <B> fmap(f: (T) -> B): FunList<B> = Cons(f(this.head), this.tail.fmap(f) as FunList<B>)
+        override fun <B> fmap(f: (T) -> B): FunList<B> {
+            tailrec fun fmap(list: FunList<T>, acc: FunList<B>): FunList<B> = when (list) {
+                Nil -> acc.reverse()
+                is Cons -> fmap(list.tail, acc.addHead(f(list.head)))
+            }
+            return fmap(this, Nil)
+        }
     }
 }
 
