@@ -13,10 +13,13 @@ class Chap8 : StringSpec({
         listOfPartiallyAppliedFunctions.fmap { it -> it(10) }.shouldBe(funListOf(10, 20, 30, 40))
     }
 
-    "Example 2" {
-        funListOf(1, 2).concat(funListOf(3, 4)) shouldBe funListOf(1, 2, 3, 4)
+    "Example 2 and 3" {
+        funListOf(1, 2).append(funListOf(3, 4)) shouldBe funListOf(1, 2, 3, 4)
 
-        funListOf(1, 2, 3).apply(funListOf({ it * it })) shouldBe funListOf(1, 4, 9)
-        funListOf(1, 2, 3).apply(funListOf({ it * it }, { it * 10 })) shouldBe funListOf(1, 4, 9, 10, 20, 30)
+        funListOf<(Int) -> Int>({ it * it }) apply funListOf(1, 2, 3) shouldBe funListOf(1, 4, 9)
+        funListOf<(Int) -> Int>({ it * it }, { it * 10 }).apply(funListOf(1, 2, 3))
+            .shouldBe(funListOf(1, 4, 9, 10, 20, 30))
+
+        FunList.pure(10) shouldBe funListOf(10)
     }
 })

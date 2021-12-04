@@ -4,18 +4,13 @@ import org.kiworkshop.learningfpinkotlin.FunList.Cons
 import org.kiworkshop.learningfpinkotlin.FunList.Nil
 import kotlin.math.max
 
-sealed class FunList<out T> : Applicative<T> {
+sealed class FunList<out T> : Functor<T> {
+    abstract override fun <B> fmap(f: (T) -> B): FunList<B>
 
-    companion object {
-        fun <V> pure(value: V): Applicative<V> = Cons(value, Nil)
-    }
-
-    override fun <V> pure(value: V): Applicative<V> = pure(value)
+    companion object
 
     object Nil : FunList<Nothing>() {
         override fun <B> fmap(f: (Nothing) -> B): FunList<B> = Nil
-
-        override fun <B> apply(ff: Applicative<(Nothing) -> B>): FunList<B> = Nil
     }
 
     data class Cons<out T>(val head: T, val tail: FunList<T>) : FunList<T>() {
@@ -28,6 +23,8 @@ sealed class FunList<out T> : Applicative<T> {
         }
 
         // 실제로는 매개변수를 ff: FunList<(T) -> B>로 해야하지만 변성 문제때문에 매개변수가 FunList가 아닌 경우 Nil을 내보내도록 한다.
+        // 변성 문제를 확장함수로 회피했음.. Applicative interface를 사용하는 대신 pure와 apply 확장함수를 작성했다.
+        /*
         override fun <B> apply(ff: Applicative<(T) -> B>): FunList<B> = when (ff) {
             is FunList -> {
                 (ff.fmap { this.fmap(it) } as FunList<FunList<B>>)
@@ -35,7 +32,29 @@ sealed class FunList<out T> : Applicative<T> {
             }
             else -> Nil
         }
+         */
     }
+}
+
+fun <A> FunList.Companion.pure(value: A): FunList<A> = Cons(value, Nil)
+
+infix fun <A, B> FunList<(A) -> B>.apply(ff: FunList<A>): FunList<B> =
+    this.fmap { ff.fmap(it) }.foldLeft(Nil as FunList<B>) { acc, curr -> acc.append(curr) }
+
+infix fun <T> FunList<T>.append(other: FunList<T>): FunList<T> {
+    tailrec fun <T> FunList<T>.concatRecur(other: FunList<T>): FunList<T> {
+        return when (this) {
+            Nil -> other
+            is Cons -> when (other) {
+                Nil -> this
+                is Cons -> {
+                    this.tail.concatRecur(other.addHead(this.head))
+                }
+            }
+        }
+    }
+
+    return this.reverse().concatRecur(other)
 }
 
 fun <T> funListOf(vararg elements: T): FunList<T> = elements.toFunList()
@@ -182,20 +201,4 @@ fun <T> FunList<T>.toList(): List<T> {
     }
 
     return this.toList(mutableListOf())
-}
-
-fun <T> FunList<T>.concat(other: FunList<T>): FunList<T> {
-    tailrec fun <T> FunList<T>.concatRecur(other: FunList<T>): FunList<T> {
-        return when (this) {
-            Nil -> other
-            is Cons -> when (other) {
-                Nil -> this
-                is Cons -> {
-                    this.tail.concatRecur(other.addHead(this.head))
-                }
-            }
-        }
-    }
-
-    return this.reverse().concatRecur(other)
 }
