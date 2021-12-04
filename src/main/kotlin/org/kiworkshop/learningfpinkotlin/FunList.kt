@@ -202,3 +202,19 @@ fun <T> FunList<T>.toList(): List<T> {
 
     return this.toList(mutableListOf())
 }
+
+tailrec fun <A, B> FunList<(A) -> B>.myZipTailrec(other: FunList<A>, acc: FunList<B> = Nil): FunList<B> = when (this) {
+    Nil -> acc.reverse()
+    is Cons -> when (other) {
+        Nil -> acc.reverse()
+        is Cons -> this.tail.myZipTailrec(other.tail, acc.addHead(this.head(other.head)))
+    }
+}
+
+infix fun <A, B> FunList<(A) -> B>.myZip(other: FunList<A>): FunList<B> = when (this) {
+    Nil -> Nil
+    is Cons -> when (other) {
+        Nil -> Nil
+        is Cons -> Cons(this.head(other.head), this.tail.myZip(other.tail))
+    }
+}

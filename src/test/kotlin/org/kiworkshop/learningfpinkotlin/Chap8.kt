@@ -49,4 +49,10 @@ class Chap8 : StringSpec({
                 apply Node(5, listOf(Node(6), Node(7, listOf(Node(8), Node(9)))))
             ).toString() shouldBe "5 [6 [], 7 [8 [], 9 []], 10 [12 [], 14 [16 [], 18 []], 15 [18 [], 21 [24 [], 27 []]]], 20 [24 [], 28 [32 [], 36 []]]]"
     }
+
+    "Example 6" {
+        (funListOf<(Int) -> Int>({ it * 5 }, { it + 10 }) myZip funListOf(10, 20, 30)).toString("") shouldBe "[50, 30]"
+        funListOf<(Int) -> Int>({ it * 5 }, { it + 10 }).myZipTailrec(funListOf(10, 20, 30))
+            .toString("") shouldBe "[50, 30]"
+    }
 })
