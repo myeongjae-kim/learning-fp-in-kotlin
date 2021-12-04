@@ -94,4 +94,9 @@ class Chap8 : StringSpec({
         (FunList.pure(compose<Int, Int, Int>().curried()) apply af1 apply af2 apply af3) shouldBe expected
         (af1 apply (af2 apply af3)).shouldBe(expected)
     }
+
+    "Example 9" {
+        val square: (Int) -> Int = { it * it }
+        FunList.pure(square) apply FunList.pure(3) shouldBe FunList.pure(square(3))
+    }
 })
