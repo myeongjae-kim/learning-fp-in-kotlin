@@ -105,4 +105,11 @@ class Chap8 : StringSpec({
 
         (af apply FunList.pure(3)) shouldBe (FunList.pure(of<Int, Int>(3)) apply af)
     }
+
+    "Example 11" {
+        val f = { it: Int -> it * it }
+        val af = funListOf(3)
+
+        (FunList.pure(f) apply af) shouldBe (af.fmap(f))
+    }
 })
