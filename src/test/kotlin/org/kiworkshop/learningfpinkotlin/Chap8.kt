@@ -120,4 +120,29 @@ class Chap8 : StringSpec({
 
         result shouldBe funListOf(5, 6, 6, 7, 7, 8)
     }
+
+    "Example 13" {
+        val lifted = Tree.liftA2 { x: Int, y: Int -> x + y }
+
+        /*
+           1        10
+         2  3     20  30
+         
+          11
+        21  31     12      13
+                 22  32  23  33
+         */
+        val result = lifted(
+            Node(
+                1,
+                listOf(Node(2), Node(3))
+            ),
+            Node(
+                10,
+                listOf(Node(20), Node(30))
+            )
+        )
+
+        result.toString() shouldBe "11 [21 [], 31 [], 12 [22 [], 32 []], 13 [23 [], 33 []]]"
+    }
 })
