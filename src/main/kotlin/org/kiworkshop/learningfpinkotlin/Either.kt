@@ -32,3 +32,8 @@ fun <L, A, B, R> Either.Companion.liftA2(binaryFunction: (A, B) -> R) =
 
 fun <L, A, B, C, R> Either.Companion.liftA3(ternaryFunction: (A, B, C) -> R) =
     { f1: Either<L, A>, f2: Either<L, B>, f3: Either<L, C> -> Either.pure(ternaryFunction.curried()) apply f1 apply f2 apply f3 }
+
+fun <L, T> Either.Companion.sequenceA(eitherList: FunList<Either<L, T>>): Either<L, FunList<T>> = when (eitherList) {
+    FunList.Nil -> Right(funListOf())
+    is FunList.Cons -> Either.pure(FunList.cons<T>().curried()) apply eitherList.head apply sequenceA(eitherList.tail)
+}

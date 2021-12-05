@@ -192,4 +192,15 @@ class Chap8 : StringSpec({
             funListOf(1, 3)
         )
     }
+
+    "Example 17" {
+        // hard...
+    }
+
+    "Example 18" {
+        val result = Either.sequenceA(funListOf(Either.pure(10), Either.pure(20)))
+
+        (result is Right).shouldBeTrue()
+        (result as Right).value.toString("") shouldBe "[10, 20]"
+    }
 })
