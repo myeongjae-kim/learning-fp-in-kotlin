@@ -158,4 +158,21 @@ class Chap8 : StringSpec({
 
         lifted(Left("error"), Either.pure(funListOf(2, 3))).toString() shouldBe "Left(error)"
     }
+
+    "Example 15" {
+        val lifted =
+            Either.liftA3<String, Int, Int, FunList<Int>, FunList<Int>> { x: Int, y: Int, z: FunList<Int> ->
+                FunList.Cons(
+                    x,
+                    FunList.Cons(y, z)
+                )
+            }
+
+        val result = lifted(Either.pure(1), Either.pure(2), Either.pure(funListOf(3, 4)))
+
+        (result is Right).shouldBeTrue()
+        (result as Right<FunList<Int>>).value.toString("") shouldBe "[1, 2, 3, 4]"
+
+        lifted(Left("error"), Either.pure(2), Either.pure(funListOf(3, 4))).toString() shouldBe "Left(error)"
+    }
 })
