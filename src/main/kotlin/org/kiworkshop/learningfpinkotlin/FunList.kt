@@ -221,3 +221,14 @@ infix fun <A, B> FunList<(A) -> B>.myZip(other: FunList<A>): FunList<B> = when (
 
 fun <A, B, R> FunList.Companion.liftA2(binaryFunction: (A, B) -> R) =
     { f1: FunList<A>, f2: FunList<B> -> FunList.pure(binaryFunction.curried()) apply f1 apply f2 }
+
+fun <T> FunList.Companion.cons() = { x: T, xs: FunList<T> -> Cons(x, xs) }
+
+// 만들긴 했는데.. 이게 무슨 의미가 있는 함수지?
+fun <T> FunList.Companion.sequenceA(listOfLists: FunList<FunList<T>>): FunList<FunList<T>> = when (listOfLists) {
+    Nil -> funListOf(funListOf())
+    is Cons -> FunList.pure(cons<T>().curried()) apply listOfLists.head apply sequenceA(listOfLists.tail)
+}
+
+fun <T> FunList.Companion.sequenceAByFoldRight(listOfLists: FunList<FunList<T>>): FunList<FunList<T>> =
+    listOfLists.foldRight(FunList.pure(funListOf()), liftA2(cons()))

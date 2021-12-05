@@ -175,4 +175,21 @@ class Chap8 : StringSpec({
 
         lifted(Left("error"), Either.pure(2), Either.pure(funListOf(3, 4))).toString() shouldBe "Left(error)"
     }
+
+    "Example 16" {
+        FunList.sequenceA(funListOf(funListOf(1), funListOf(3))) shouldBe funListOf(funListOf(1, 3))
+        FunList.sequenceAByFoldRight(funListOf(funListOf(1), funListOf(3))) shouldBe funListOf(funListOf(1, 3))
+
+        FunList.sequenceA(funListOf(funListOf(1, 2), funListOf(3))) shouldBe funListOf(funListOf(1, 3), funListOf(2, 3))
+        FunList.sequenceAByFoldRight(funListOf(funListOf(1, 2), funListOf(3))) shouldBe funListOf(
+            funListOf(1, 3),
+            funListOf(2, 3)
+        )
+
+        FunList.sequenceA(funListOf(funListOf(1), funListOf(2, 3))) shouldBe funListOf(funListOf(1, 2), funListOf(1, 3))
+        FunList.sequenceAByFoldRight(funListOf(funListOf(1), funListOf(2, 3))) shouldBe funListOf(
+            funListOf(1, 2),
+            funListOf(1, 3)
+        )
+    }
 })
