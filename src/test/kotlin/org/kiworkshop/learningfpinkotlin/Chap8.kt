@@ -112,4 +112,12 @@ class Chap8 : StringSpec({
 
         (FunList.pure(f) apply af) shouldBe (af.fmap(f))
     }
+
+    "Example 12" {
+        val lifted = FunList.liftA2 { x: Int, y: Int -> x + y }
+
+        val result = lifted(funListOf(1, 2, 3), funListOf(4, 5))
+
+        result shouldBe funListOf(5, 6, 6, 7, 7, 8)
+    }
 })

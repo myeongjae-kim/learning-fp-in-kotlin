@@ -218,3 +218,6 @@ infix fun <A, B> FunList<(A) -> B>.myZip(other: FunList<A>): FunList<B> = when (
         is Cons -> Cons(this.head(other.head), this.tail.myZip(other.tail))
     }
 }
+
+fun <A, B, R> FunList.Companion.liftA2(binaryFunction: (A, B) -> R) =
+    { f1: FunList<A>, f2: FunList<B> -> FunList.pure(binaryFunction.curried()) apply f1 apply f2 }
