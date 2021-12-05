@@ -1,6 +1,7 @@
 package org.kiworkshop.learningfpinkotlin
 
 import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.shouldBe
 
 class Chap8 : StringSpec({
@@ -144,5 +145,17 @@ class Chap8 : StringSpec({
         )
 
         result.toString() shouldBe "11 [21 [], 31 [], 12 [22 [], 32 []], 13 [23 [], 33 []]]"
+    }
+
+    "Example 14" {
+        val lifted =
+            Either.liftA2<String, Int, FunList<Int>, FunList<Int>> { x: Int, y: FunList<Int> -> FunList.Cons(x, y) }
+
+        val result = lifted(Either.pure(1), Either.pure(funListOf(2, 3)))
+
+        (result is Right).shouldBeTrue()
+        (result as Right<FunList<Int>>).value.toString("") shouldBe "[1, 2, 3]"
+
+        lifted(Left("error"), Either.pure(funListOf(2, 3))).toString() shouldBe "Left(error)"
     }
 })

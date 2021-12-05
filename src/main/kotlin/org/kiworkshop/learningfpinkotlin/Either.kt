@@ -26,3 +26,6 @@ infix fun <L, A, B> Either<L, (A) -> B>.apply(f: Either<L, A>): Either<L, B> = w
     is Left -> this
     is Right -> f.fmap(value)
 }
+
+fun <L, A, B, R> Either.Companion.liftA2(binaryFunction: (A, B) -> R) =
+    { f1: Either<L, A>, f2: Either<L, B> -> Either.pure(binaryFunction.curried()) apply f1 apply f2 }
