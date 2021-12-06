@@ -1,7 +1,7 @@
 package org.kiworkshop.learningfpinkotlin
 
-import org.kiworkshop.learningfpinkotlin.BinaryTree.EmptyBinaryTree
 import org.kiworkshop.learningfpinkotlin.BinaryTree.BinaryNode
+import org.kiworkshop.learningfpinkotlin.BinaryTree.EmptyBinaryTree
 
 sealed class BinaryTree<out T : Comparable<@UnsafeVariance T>> {
     object EmptyBinaryTree : BinaryTree<Nothing>() {
