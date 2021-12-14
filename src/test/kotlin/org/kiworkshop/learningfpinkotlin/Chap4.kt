@@ -6,6 +6,10 @@ import io.kotest.matchers.collections.shouldContainExactly
 import io.kotest.matchers.nulls.shouldBeNull
 import io.kotest.matchers.shouldBe
 
+fun interface Filter<T> {
+    operator fun invoke(iterables: Iterable<T>): List<T>
+}
+
 class Chap4 : StringSpec({
     // List<T>.max() 대신 List<T>.maxOrNull()
     // List<T>.min() 대신 List<T>.minOrNull()
@@ -119,6 +123,40 @@ class Chap4 : StringSpec({
         val getMaxAndPower = ::power.curried() compose ::max
         getMaxAndPower(listOf(1, 2, 3, 4, 5))(2) shouldBe 25
         getMaxAndPower(listOf())(2) shouldBe null
+    }
+
+    "만화경 댓글 필터링에 사용한 합성함수" {
+        // Filter interface를 구현할 때 생성자에 `next: Filter<T>?`로 매개변수를 받아서 필터를 chaining할 수도 있지만,
+        // 필터 자체는 필터링에만 집중하고 chaining은 필터에서 신경쓰지 않도록 구현하고 싶었다. 
+        class EvenFilter(private val next: Filter<Int>? = null) : Filter<Int> {
+            override fun invoke(iterables: Iterable<Int>): List<Int> {
+                val filtered = iterables.filter { it and 1 == 0 }
+                return next?.invoke(filtered) ?: filtered
+            }
+        }
+
+        class MultipleOf3Filter(private val next: Filter<Int>? = null) : Filter<Int> {
+            override fun invoke(iterables: Iterable<Int>): List<Int> {
+                val filtered = iterables.filter { it % 3 == 0 }
+                return next?.invoke(filtered) ?: filtered
+            }
+        }
+
+        EvenFilter(next = MultipleOf3Filter())(1..17).shouldContainExactly(6, 12)
+
+        // chaining의 책임을 필터 구현체 밖으로 빼내고 싶어서 필터 리스트에 applyFilters라는 확장함수를 구현했다.
+        // 개별 필터 구현체에서 담당했던 chaining을 밖으로 빼내니 보일러플레이트 코드가 줄어들어서 만족했다.
+        fun <T> List<Filter<T>>.applyFilters(iterables: Iterable<T>): List<T> =
+            fold(iterables.toList()) { acc, filter -> filter(acc) }
+
+        val even = Filter<Int> { contents -> contents.filter { it and 1 == 0 } }
+        val multipleOf3 = Filter<Int> { contents -> contents.filter { it % 3 == 0 } }
+
+        listOf(even, multipleOf3).applyFilters(1..17).shouldContainExactly(6, 12)
+
+        // 그리고 스터디 준비를 하다가 4장의 합성함수를 발견하고 적용했다..
+        infix fun <T> Filter<T>.compose(g: Filter<T>): Filter<T> = Filter { iterables -> this(g(iterables)) }
+        (multipleOf3 compose even)(1..17).shouldContainExactly(6, 12)
     }
 
     "Example 4-7" {
