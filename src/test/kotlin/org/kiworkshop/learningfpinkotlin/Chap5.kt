@@ -185,7 +185,8 @@ class Chap5 : StringSpec({
         testBigIntList(
             bigIntList = (10000000 downTo 1).toList(),
             assertImperativeWay = { millis: Long -> millis.shouldBeLessThanOrEqual(1) },
-            assertFunctionalWay = { millis: Long -> millis.shouldBeGreaterThan(100) }, // 왜 functionalWay만 100ms가 넘지?
+            // 왜 functionalWay만 100ms가 넘지? -> 아 모든 element에 대해서 검사하지 참.. realFunctionalWay만 Vertical evluation이다.
+            assertFunctionalWay = { millis: Long -> millis.shouldBeGreaterThan(100) },
             assertRealFunctionalWay = { millis: Long -> millis.shouldBeLessThanOrEqual(1) },
         )
     }
@@ -288,7 +289,7 @@ class Chap5 : StringSpec({
 
     "Example 5-22" {
         val infiniteValue = generateFunStream(0) { it + 5 }
-        infiniteValue.take(5).toList().shouldContainExactly(0, 5, 10, 15, 20)
+        infiniteValue.take(5).sum() shouldBe 50
     }
 
     "Example 5-23" {
@@ -302,9 +303,15 @@ class Chap5 : StringSpec({
     }
 
     "Example 5-24" {
-        tailrec fun f(target: Double = 1000.0, nextNaturalNumber: Int = 1, sum: Double = 0.0, count: Int = 0): Int =
-            if (sum > target) count
-            else f(target, nextNaturalNumber + 1, sqrt(nextNaturalNumber.toDouble()) + sum, count + 1)
+        tailrec fun f(
+            target: Double = 1000.0,
+            naturalNumbers: FunStream<Int> = generateFunStream(1) { it + 1 },
+            sum: Double = 0.0,
+            count: Int = 0
+        ): Int {
+            return if (sum > target) count
+            else f(target, naturalNumbers.getTail(), sqrt(naturalNumbers.getHead().toDouble()) + sum, count + 1)
+        }
 
         f(-1.0) shouldBe 0
         f(0.0) shouldBe 1
@@ -317,12 +324,12 @@ class Chap5 : StringSpec({
         // imperative
         var sum = 0.0
         var count = 0
-        var nextNaturalNumber = 1
+        var naturalNumber = 1
         val target = 1000.0
 
         while (sum < target) {
-            sum += sqrt(nextNaturalNumber.toDouble())
-            nextNaturalNumber++
+            sum += sqrt(naturalNumber.toDouble())
+            naturalNumber++
             count++
         }
         count shouldBe 131
