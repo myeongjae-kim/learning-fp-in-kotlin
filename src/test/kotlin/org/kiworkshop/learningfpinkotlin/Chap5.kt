@@ -68,7 +68,7 @@ class Chap5 : StringSpec({
 
     "Example 5-7" {
         list.takeWhile { it < 3 }.toList().shouldContainExactly(1, 2)
-        list.takeWhile { false }.toList().shouldBeEmpty()
+        list.takeWhile { false } shouldBe list
 
         listOf(1, 2, 3, 4, 5).takeWhile { false }.shouldBeEmpty()
     }
