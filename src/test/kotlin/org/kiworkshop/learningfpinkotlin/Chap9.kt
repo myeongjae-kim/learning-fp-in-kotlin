@@ -42,24 +42,37 @@ class Chap9 : StringSpec({
     }
 
     "Example 9-7 ~ 9-9" {
+        // 처음에 작성한 FunListLiftMonoid. 문제의 의도와 달랐다.
         val list1 = funListOf(1, 2, 3)
         val list2 = funListOf(4, 5)
 
-        val listMonoid = ListMonoid.monoid(SumMonoid())
-        validateMonoid(listMonoid, funListOf(1), funListOf(2), funListOf(3))
+        val listLiftMonoid = FunListLiftMonoid.monoid(SumMonoid())
+        validateMonoid(listLiftMonoid, funListOf(1), funListOf(2), funListOf(3))
 
-        listMonoid.mempty() shouldBe FunList.Nil
-        listMonoid.mappend(list1, list2) shouldBe funListOf(5, 6, 6, 7, 7, 8)
-        listMonoid.mconcat(funListOf(list1, list2)) shouldBe funListOf(5, 6, 6, 7, 7, 8)
+        listLiftMonoid.mempty() shouldBe FunList.Nil
+        listLiftMonoid.mappend(list1, list2) shouldBe funListOf(5, 6, 6, 7, 7, 8)
+        listLiftMonoid.mconcat(funListOf(list1, list2)) shouldBe funListOf(5, 6, 6, 7, 7, 8)
 
         // 9-9
-        listMonoid.mconcat(funListOf(funListOf(1, 5), funListOf(11, 50), funListOf(100)))
+        listLiftMonoid.mconcat(funListOf(funListOf(1, 5), funListOf(11, 50), funListOf(100)))
             .toString("") shouldBe "[112, 151, 116, 155]"
+
+        // 저자가 의도한 FunListMonoid
+        FunListMonoid<Int>().apply {
+            mempty() shouldBe FunList.Nil
+            mappend(list1, list2) shouldBe funListOf(1, 2, 3, 4, 5)
+            mconcat(funListOf(list1, list2)) shouldBe funListOf(1, 2, 3, 5, 4) // foldRight is used
+
+            mconcat(funListOf(funListOf(1, 5), funListOf(11, 50), funListOf(100)))
+                .toString("") shouldBe "[1, 5, 11, 50, 100]"
+        }
     }
 
     "Example 9-10" {
         // 리스트를 Foldable 타입 클래스의 인스턴스로 만드는게 아니라 리스트 모노이드를 Foldable 타입 클래스의 인스턴스로 만들라고?
         // 모르겠는데??
+        // 저자 코드를 보니 리스트를 Foldable 타입 클래스의 인스턴스로 만드는 것이다.
+        funListOf(1, 2, 3).foldMap({ it }, SumMonoid()) shouldBe 6
     }
 
     "Example 9-11" {

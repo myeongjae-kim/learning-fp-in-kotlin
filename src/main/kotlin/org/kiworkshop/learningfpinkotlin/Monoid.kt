@@ -33,7 +33,7 @@ class AllMonoid : Monoid<Boolean> {
     override fun mappend(m1: Boolean, m2: Boolean): Boolean = m1 && m2
 }
 
-object ListMonoid {
+object FunListLiftMonoid {
 
     fun <T> monoid(inValue: Monoid<T>): Monoid<FunList<T>> = object : Monoid<FunList<T>> {
         override fun mempty(): FunList<T> = FunList.Nil
@@ -47,6 +47,14 @@ object ListMonoid {
     }
 }
 
+class FunListMonoid<T> : Monoid<FunList<T>> {
+
+    override fun mempty(): FunList<T> = FunList.Nil
+
+    override fun mappend(m1: FunList<T>, m2: FunList<T>): FunList<T> = m1 append m2
+}
+
+/*
 object FunListMonoid {
     operator fun <T> invoke(): Monoid<FunList<T>> = object : Monoid<FunList<T>> {
         override fun mempty(): FunList<T> = FunList.Nil
@@ -59,3 +67,4 @@ object FunListMonoid {
         }
     }
 }
+ */
