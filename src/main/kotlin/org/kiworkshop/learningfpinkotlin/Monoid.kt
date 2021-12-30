@@ -35,7 +35,7 @@ class AllMonoid : Monoid<Boolean> {
 
 object ListMonoid {
 
-    fun <T> monoid(inValue: Monoid<T>) = object : Monoid<FunList<T>> {
+    fun <T> monoid(inValue: Monoid<T>): Monoid<FunList<T>> = object : Monoid<FunList<T>> {
         override fun mempty(): FunList<T> = FunList.Nil
 
         override fun mappend(m1: FunList<T>, m2: FunList<T>): FunList<T> = when {

@@ -4,6 +4,7 @@ import io.kotest.core.Tuple3
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 
+// 모노이드는 '연산'을 추상화한 것이다. (연산: 식이 나타낸 일정한 규칙에 따라 계산함.)
 class Chap9 : StringSpec({
 
     fun <T> validateMonoid(monoid: Monoid<T>, x: T, y: T, z: T) {
@@ -54,5 +55,25 @@ class Chap9 : StringSpec({
         // 9-9
         listMonoid.mconcat(funListOf(funListOf(1, 5), funListOf(11, 50), funListOf(100)))
             .toString("") shouldBe "[112, 151, 116, 155]"
+    }
+
+    "Example 9-10" {
+        // 리스트를 Foldable 타입 클래스의 인스턴스로 만드는게 아니라 리스트 모노이드를 Foldable 타입 클래스의 인스턴스로 만들라고?
+        // 모르겠는데??
+    }
+
+    "Example 9-11" {
+        val tree = Node(1, listOf(Node(2), Node(3)))
+        val iterated = mutableListOf<Int>()
+
+        val sum = tree.foldLeft(0) { acc, curr ->
+            iterated.add(curr)
+            acc + curr
+        }
+
+        sum shouldBe 6
+        iterated shouldBe mutableListOf(2, 3, 1) // post-order
+
+        tree.foldMap({ it }, m = SumMonoid()) shouldBe 6
     }
 })
