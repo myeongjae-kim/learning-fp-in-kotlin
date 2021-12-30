@@ -10,7 +10,7 @@ data class Node<out A>(val value: A, val forest: List<Node<A>> = emptyList()) : 
     override fun toString(): String = "$value $forest"
 
     override fun <B> fmap(f: (A) -> B): Node<B> = Node(f(value), forest.map { it.fmap(f) })
-   
+
     override fun <B> foldLeft(acc: B, f: (B, A) -> B): B {
         val accumulatorProcessed = when {
             forest.isEmpty() -> acc
@@ -32,3 +32,5 @@ infix fun <A, B> Node<(A) -> B>.apply(node: Node<A>): Node<B> = Node(
 
 fun <A, B, R> Tree.Companion.liftA2(binaryFunction: (A, B) -> R) =
     { f1: Node<A>, f2: Node<B> -> Tree.pure(binaryFunction.curried()) apply f1 apply f2 }
+
+fun <A> Tree<A>.contains(value: A): Boolean = foldMap({ it == value }, AnyMonoid())

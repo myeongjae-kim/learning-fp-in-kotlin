@@ -4,13 +4,14 @@ import org.kiworkshop.learningfpinkotlin.FunList.Cons
 import org.kiworkshop.learningfpinkotlin.FunList.Nil
 import kotlin.math.max
 
-sealed class FunList<out T> : Functor<T> {
+sealed class FunList<out T> : Functor<T>, Foldable<T> {
     abstract override fun <B> fmap(f: (T) -> B): FunList<B>
 
     companion object
 
     object Nil : FunList<Nothing>() {
         override fun <B> fmap(f: (Nothing) -> B): FunList<B> = Nil
+        override fun <B> foldLeft(acc: B, f: (B, Nothing) -> B): B = acc
     }
 
     data class Cons<out T>(val head: T, val tail: FunList<T>) : FunList<T>() {
@@ -20,6 +21,15 @@ sealed class FunList<out T> : Functor<T> {
                 is Cons -> fmap(list.tail, acc.addHead(f(list.head)))
             }
             return fmap(this, Nil)
+        }
+
+        override fun <B> foldLeft(acc: B, f: (B, T) -> B): B {
+            tailrec fun <T, R> FunList<T>.foldLeftTailrec(acc: R, f: (R, T) -> R): R = when (this) {
+                Nil -> acc
+                is Cons -> tail.foldLeftTailrec(f(acc, head), f)
+            }
+
+            return foldLeftTailrec(acc, f)
         }
 
         // 실제로는 매개변수를 ff: FunList<(T) -> B>로 해야하지만 변성 문제때문에 매개변수가 FunList가 아닌 경우 Nil을 내보내도록 한다.
@@ -146,11 +156,6 @@ tailrec fun <T, R> FunList<T>.indexedMap(index: Int = 0, acc: FunList<R> = Nil, 
         is Cons -> tail.indexedMap(index + 1, acc.addHead(f(index, this.head)), f)
     }
 
-tailrec fun <T, R> FunList<T>.foldLeft(acc: R, f: (R, T) -> R): R = when (this) {
-    Nil -> acc
-    is Cons -> tail.foldLeft(f(acc, head), f)
-}
-
 // precondition: 리스트의 모든 값은 0보다 크고, 리스트의 크기는 1보다 크다.
 fun FunList<Int>.maximumByFoldLeft(): Int = foldLeft(0) { acc, it -> max(acc, it) }
 
@@ -187,7 +192,7 @@ fun <T, R> FunList<T>.associate(f: (T) -> Pair<T, R>): Map<T, R> = this.map(Nil,
 
 fun <T, K> FunList<T>.groupBy(f: (T) -> K): Map<K, FunList<T>> =
     this.map(Nil) { Pair(f(it), it) }
-        .foldLeft<Pair<K, T>, MutableMap<K, FunList<T>>>(mutableMapOf()) { acc, (key, value) ->
+        .foldLeft<MutableMap<K, FunList<T>>>(mutableMapOf()) { acc, (key, value) ->
             acc[key] = (acc[key] ?: funListOf()).addHead(value)
             acc
         }.map { (key, value) -> Pair(key, value.reverse()) }
@@ -240,3 +245,5 @@ fun <T> FunList.Companion.sequenceA(listOfLists: FunList<FunList<T>>): FunList<F
 
 fun <T> FunList.Companion.sequenceAByFoldRight(listOfLists: FunList<FunList<T>>): FunList<FunList<T>> =
     listOfLists.foldRight(FunList.pure(funListOf()), liftA2(cons()))
+
+fun <T> FunList<T>.contains(value: T): Boolean = foldMap({ it == value }, AnyMonoid())

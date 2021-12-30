@@ -76,4 +76,18 @@ class Chap9 : StringSpec({
 
         tree.foldMap({ it }, m = SumMonoid()) shouldBe 6
     }
+
+    "Example 9-12" {
+        funListOf(1, 2, 3).run {
+            contains(1) shouldBe true
+            contains(4) shouldBe false
+        }
+    }
+
+    "Example 9-13" {
+        Node(1, listOf(Node(2), Node(3))).run {
+            contains(1) shouldBe true
+            contains(4) shouldBe false
+        }
+    }
 })
