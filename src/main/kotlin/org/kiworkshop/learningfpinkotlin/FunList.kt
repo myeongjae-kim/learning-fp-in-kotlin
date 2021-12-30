@@ -138,6 +138,8 @@ tailrec fun <T, R> FunList<T>.map(acc: FunList<R> = Nil, f: (T) -> R): FunList<R
     is Cons -> tail.map(acc.addHead(f(head)), f)
 }
 
+fun <T> FunList<T>.forEach(f: (T) -> Unit) = map(Nil, f)
+
 tailrec fun <T, R> FunList<T>.indexedMap(index: Int = 0, acc: FunList<R> = Nil, f: (Int, T) -> R): FunList<R> =
     when (this) {
         Nil -> acc.reverse()

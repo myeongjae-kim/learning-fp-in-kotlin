@@ -7,6 +7,8 @@ interface Monoid<T> {
     fun mappend(m1: T, m2: T): T
 }
 
+fun <T> Monoid<T>.mconcat(list: FunList<T>): T = list.foldRight(mempty(), ::mappend)
+
 class SumMonoid : Monoid<Int> {
     override fun mempty(): Int = 0
 
