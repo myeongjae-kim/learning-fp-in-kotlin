@@ -34,3 +34,5 @@ fun <A, B, R> Tree.Companion.liftA2(binaryFunction: (A, B) -> R) =
     { f1: Node<A>, f2: Node<B> -> Tree.pure(binaryFunction.curried()) apply f1 apply f2 }
 
 fun <A> Tree<A>.contains(value: A): Boolean = foldMap({ it == value }, AnyMonoid())
+
+fun <A> Tree<A>.toFunList(): FunList<A> = foldMap({ funListOf(it) }, FunListMonoid())

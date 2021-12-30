@@ -90,4 +90,8 @@ class Chap9 : StringSpec({
             contains(4) shouldBe false
         }
     }
+
+    "Example 9-14" {
+        Node(1, listOf(Node(2), Node(3))).toFunList() shouldBe funListOf(2, 3, 1)
+    }
 })
