@@ -39,4 +39,20 @@ class Chap9 : StringSpec({
             AllMonoid().mconcat(input) shouldBe allExpected
         }
     }
+
+    "Example 9-7 ~ 9-9" {
+        val list1 = funListOf(1, 2, 3)
+        val list2 = funListOf(4, 5)
+
+        val listMonoid = ListMonoid.monoid(SumMonoid())
+        validateMonoid(listMonoid, funListOf(1), funListOf(2), funListOf(3))
+
+        listMonoid.mempty() shouldBe FunList.Nil
+        listMonoid.mappend(list1, list2) shouldBe funListOf(5, 6, 6, 7, 7, 8)
+        listMonoid.mconcat(funListOf(list1, list2)) shouldBe funListOf(5, 6, 6, 7, 7, 8)
+
+        // 9-9
+        listMonoid.mconcat(funListOf(funListOf(1, 5), funListOf(11, 50), funListOf(100)))
+            .toString("") shouldBe "[112, 151, 116, 155]"
+    }
 })
