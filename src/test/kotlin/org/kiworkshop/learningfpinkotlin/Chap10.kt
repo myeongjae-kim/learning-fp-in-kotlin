@@ -69,4 +69,76 @@ class Chap10 : StringSpec({
     "Example 10-8 ~ 10-10" {
         funStreamOf(1, 2, 3).toString() shouldBe "[1, 2, 3]"
     }
+
+    "Example 10-11" {
+        (funStreamOf(1, 2) append funStreamOf(3, 4)).toString() shouldBe "[1, 2, 3, 4]"
+
+        funStreamOf(1, 2, 3).foldMap({ funStreamOf(it * it) }, FunStreamMonoid()).toString() shouldBe "[1, 4, 9]"
+    }
+
+    "Example 10-12" {
+        funStreamOf(1, 2, 3).fmap { it * it }.toString() shouldBe "[1, 4, 9]"
+        funStreamOf(1, 2, 3).fmap { println(it); it * it }.take(1).toString() shouldBe "[1]"
+    }
+
+    "Example 10-13" {
+        FunStream.pure(1).toString() shouldBe "[1]"
+        (FunStream.pure { x: Int -> x * x } apply funStreamOf(1, 2, 3)).toString() shouldBe "[1, 4, 9]"
+    }
+
+    // foldRight, flatten이 게으르게 작동할 수 있나?
+    // 어떤 값으로 매핑이 될 줄 알고 게을러? 문제에서 말하는 게으름이 뭐지
+    // 저자 코드도 내 코드랑 거의 비슷한데.
+    "Example 10-14" {
+        funStreamOf(1, 2, 3).foldRight(0) { curr, acc -> acc + curr } shouldBe 6
+
+        funStreamOf(funStreamOf(1), funStreamOf(2)).flatten().take(1).toString() shouldBe "[1]"
+
+        funStreamOf(1, 2, 3).flatMap { funStreamOf(it * it) }.toString() shouldBe "[1, 4, 9]"
+
+        // 1, 2, 3이 모두 찍힌다. FunStream의 flatMap은 무엇에 대해서 게으른거지?
+        (funStreamOf(1, 2, 3).flatMap { println(it); funStreamOf(it * it) } as FunStream<Int>).take(1)
+            .toString() shouldBe "[1]"
+    }
+
+    "Example 10-14 of authors" {
+        fun <T> FunStream<FunStream<T>>.flatten2(): FunStream<T> {
+            println("flatten2")
+            return when (this) {
+                FunStream.Nil -> FunStream.Nil
+                is FunStream.Cons -> head() append tail().flatten2()
+            }
+        }
+
+        fun <T, R> FunStream<T>.foldRight2(acc: R, f: (T, R) -> R): R {
+            println("foldRight2")
+            return when (this) {
+                FunStream.Nil -> acc
+                is FunStream.Cons -> f(head(), tail().foldRight2(acc, f))
+            }
+        }
+
+        infix fun <T, R> FunStream<T>.flatMap2(f: (T) -> FunStream<R>): FunStream<R> {
+            println("flatMap2")
+            return when (this) {
+                FunStream.Nil -> FunStream.Nil
+                is FunStream.Cons -> f(head()) append tail().flatMap2(f)
+            }
+        }
+
+        val valueStream: FunStream<Int> = funStreamOf(1, 2, 3)
+        val functionStream: (Int) -> FunStream<Int> = { x ->
+            funStreamOf(x, x * 2, x * 3)
+        }
+        val flatMapResult = valueStream flatMap2 functionStream
+        flatMapResult.toString() shouldBe "[1, 2, 3, 2, 4, 6, 3, 6, 9]"
+
+        val funStream: FunStream<FunStream<Int>> = funStreamOf(funStreamOf(1, 2), funStreamOf(3, 4), funStreamOf(5, 6))
+        val flattenResult = funStream.flatten2()
+        flattenResult.toString() shouldBe "[1, 2, 3, 4, 5, 6]"
+
+        val foldRightStream = funStreamOf(1, 2, 3)
+        val foldRightResult = foldRightStream.foldRight2(1) { x, acc -> x * acc }
+        foldRightResult shouldBe 6
+    }
 })

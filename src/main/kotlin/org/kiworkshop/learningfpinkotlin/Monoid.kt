@@ -54,17 +54,9 @@ class FunListMonoid<T> : Monoid<FunList<T>> {
     override fun mappend(m1: FunList<T>, m2: FunList<T>): FunList<T> = m1 append m2
 }
 
-/*
-object FunListMonoid {
-    operator fun <T> invoke(): Monoid<FunList<T>> = object : Monoid<FunList<T>> {
-        override fun mempty(): FunList<T> = FunList.Nil
+class FunStreamMonoid<T> : Monoid<FunStream<T>> {
 
-        override fun mappend(m1: FunList<T>, m2: FunList<T>): FunList<T> = when {
-            m1 is FunList.Nil -> m2
-            m2 is FunList.Nil -> m1
-            m1 is FunList.Cons && m2 is FunList.Cons -> m1.append(m2)
-            else -> FunList.Nil
-        }
-    }
+    override fun mempty(): FunStream<T> = FunStream.Nil
+
+    override fun mappend(m1: FunStream<T>, m2: FunStream<T>): FunStream<T> = m1 append m2
 }
- */
