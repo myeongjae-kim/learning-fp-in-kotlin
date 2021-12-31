@@ -10,3 +10,6 @@ interface Monad<out A> : Functor<A> {
 
     infix fun <B> leadTo(m: Monad<B>): Monad<B> = flatMap { m }
 }
+
+infix fun <F, G, R> ((F) -> Monad<R>).compose(g: (G) -> Monad<F>): (G) -> Monad<R> =
+    { gInput: G -> g(gInput) flatMap this }

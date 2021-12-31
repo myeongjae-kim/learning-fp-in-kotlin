@@ -32,4 +32,37 @@ class Chap10 : StringSpec({
 
         getValueOfD4(A4(Just(B4(Just(C4(D4(Just(value)))))))).toString() shouldBe "Just($value)"
     }
+
+    "Example 10-4" {
+        val f = { x: Int -> funListOf(x * 10) }
+        (FunList.pure(1) flatMap f) shouldBe funListOf(10)
+    }
+
+    "Example 10-5" {
+        val pure: (Int) -> FunList<Int> = FunList.Companion::pure
+        val m = funListOf(1, 2, 3)
+
+        (m flatMap pure) shouldBe m
+    }
+
+    "Example 10-6" {
+        val f = { a: Int -> funListOf(a * 2) }
+        val g = { a: Int -> funListOf(a + 1) }
+        val m = funListOf(10)
+
+        ((m flatMap f) flatMap g) shouldBe (m flatMap { x -> f(x) flatMap g })
+        ((m flatMap f) flatMap g) shouldBe funListOf(21)
+    }
+
+    "Example 10-7" {
+        val f = { a: Int -> funListOf(a * 2) }
+        val g = { a: Int -> funListOf(a + 1) }
+        val h = { a: Int -> funListOf(a * 10) }
+        val pure: (Int) -> FunList<Int> = FunList.Companion::pure
+
+        (pure compose f)(10) shouldBe f(10)
+        (f compose pure)(10) shouldBe f(10)
+        ((f compose g) compose h)(10) shouldBe (f compose (g compose h))(10)
+        ((f compose g) compose h)(10) shouldBe funListOf(((10 * 10 + 1)) * 2)
+    }
 })
