@@ -3,9 +3,21 @@ package org.kiworkshop.learningfpinkotlin
 import org.kiworkshop.learningfpinkotlin.FunStream.Cons
 import org.kiworkshop.learningfpinkotlin.FunStream.Nil
 
-sealed class FunStream<out T> {
-    object Nil : FunStream<Nothing>()
-    data class Cons<out T>(val head: () -> T, val tail: () -> FunStream<T>) : FunStream<T>()
+sealed class FunStream<out T> : Foldable<T> {
+    companion object {
+        private const val DELIMITER = ", "
+    }
+
+    object Nil : FunStream<Nothing>() {
+        override fun <B> foldLeft(acc: B, f: (B, Nothing) -> B): B = acc
+        override fun toString(): String = ""
+    }
+
+    data class Cons<out T>(val head: () -> T, val tail: () -> FunStream<T>) : FunStream<T>() {
+        override fun <B> foldLeft(acc: B, f: (B, T) -> B): B = tail().foldLeft(f(acc, head()), f)
+        override fun toString(): String =
+            "[${foldLeft("") { acc, curr -> "$acc$DELIMITER$curr" }.drop(DELIMITER.length)}]"
+    }
 }
 
 fun <T> FunStream<T>.getHead(): T = when (this) {

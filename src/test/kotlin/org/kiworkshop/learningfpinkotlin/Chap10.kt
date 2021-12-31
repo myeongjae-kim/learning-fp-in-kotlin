@@ -65,4 +65,8 @@ class Chap10 : StringSpec({
         ((f compose g) compose h)(10) shouldBe (f compose (g compose h))(10)
         ((f compose g) compose h)(10) shouldBe funListOf(((10 * 10 + 1)) * 2)
     }
+
+    "Example 10-8 ~ 10-10" {
+        funStreamOf(1, 2, 3).toString() shouldBe "[1, 2, 3]"
+    }
 })
