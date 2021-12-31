@@ -4,14 +4,19 @@ import org.kiworkshop.learningfpinkotlin.FunList.Cons
 import org.kiworkshop.learningfpinkotlin.FunList.Nil
 import kotlin.math.max
 
-sealed class FunList<out T> : Functor<T>, Foldable<T> {
+sealed class FunList<out T> : Functor<T>, Foldable<T>, Monad<T> {
     abstract override fun <B> fmap(f: (T) -> B): FunList<B>
+    abstract override fun <B> flatMap(f: (T) -> Monad<B>): FunList<B>
 
-    companion object
+    companion object {}
+
+    override fun <V> pure(value: V): FunList<V> = Cons(value, Nil)
 
     object Nil : FunList<Nothing>() {
         override fun <B> fmap(f: (Nothing) -> B): FunList<B> = Nil
         override fun <B> foldLeft(acc: B, f: (B, Nothing) -> B): B = acc
+
+        override fun <B> flatMap(f: (Nothing) -> Monad<B>): FunList<B> = Nil
     }
 
     data class Cons<out T>(val head: T, val tail: FunList<T>) : FunList<T>() {
@@ -30,6 +35,12 @@ sealed class FunList<out T> : Functor<T>, Foldable<T> {
             }
 
             return foldLeftTailrec(acc, f)
+        }
+
+        override fun <B> flatMap(f: (T) -> Monad<B>): FunList<B> = try {
+            fmap(f).foldMap({ it as FunList<B> }, FunListMonoid())
+        } catch (e: ClassCastException) {
+            Nil
         }
 
         // 실제로는 매개변수를 ff: FunList<(T) -> B>로 해야하지만 변성 문제때문에 매개변수가 FunList가 아닌 경우 Nil을 내보내도록 한다.
