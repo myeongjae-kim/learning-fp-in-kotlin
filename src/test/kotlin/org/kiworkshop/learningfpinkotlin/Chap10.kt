@@ -141,4 +141,28 @@ class Chap10 : StringSpec({
         val foldRightResult = foldRightStream.foldRight2(1) { x, acc -> x * acc }
         foldRightResult shouldBe 6
     }
+
+    // 저자 풀이를 참고했다.
+    // 깨달은 것: flatMap은 mappend만 구현하면 만들 수 있다. 바이너리 트리의 mappend는 리스트와는 다르게 left와 right 중에서 선택해야 한다.
+    "Example 10-15" {
+        FunTree.Node(2, FunTree.Node(1, FunTree.Node(4)), FunTree.Node(3))
+            .toString() shouldBe "[[[E, 4, E], 1, E], 2, [E, 3, E]]"
+
+        FunTree.Node(0).mempty() shouldBe FunTree.Nil
+
+        /*
+              2
+           1    3
+
+            .flatMap { FunTree.Node(it * 10, FunTree.Node(it * 100), FunTree.Node(it * 1000)) }
+            shouldBe
+                                         20
+                              200                   2000
+                     10                30
+                100     1000      300      3000
+         */
+        FunTree.Node(2, FunTree.Node(1), FunTree.Node(3))
+            .flatMap { FunTree.Node(it * 10, FunTree.Node(it * 100), FunTree.Node(it * 1000)) }
+            .toString() shouldBe "[[[[E, 100, E], 10, [E, 1000, E]], 200, [[E, 300, E], 30, [E, 3000, E]]], 20, [E, 2000, E]]"
+    }
 })
