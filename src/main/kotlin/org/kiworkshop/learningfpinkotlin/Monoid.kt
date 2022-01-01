@@ -60,3 +60,24 @@ class FunStreamMonoid<T> : Monoid<FunStream<T>> {
 
     override fun mappend(m1: FunStream<T>, m2: FunStream<T>): FunStream<T> = m1 append m2
 }
+
+class FunTreeMonoid<T> : Monoid<FunTree<T>> {
+    override fun mempty() = FunTree.Nil
+    override fun mappend(m1: FunTree<T>, m2: FunTree<T>): FunTree<T> {
+        infix fun <A> FunTree<A>.mappend(other: FunTree<A>): FunTree<A> = when (this) {
+            FunTree.Nil -> other
+            is FunTree.Node -> when (other) {
+                FunTree.Nil -> this
+                is FunTree.Node -> when (left) {
+                    FunTree.Nil -> FunTree.Node(value, other, right)
+                    is FunTree.Node -> when (right) {
+                        FunTree.Nil -> FunTree.Node(value, left, other)
+                        is FunTree.Node -> FunTree.Node(value, left.mappend(other), right)
+                    }
+                }
+            }
+        }
+
+        return m1.mappend(m2)
+    }
+}
