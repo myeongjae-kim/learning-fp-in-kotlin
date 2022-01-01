@@ -193,8 +193,7 @@ class Chap5 : StringSpec({
 
     "Example 5-17" {
         funStreamOf(1, 2, 3).getHead() shouldBe 1
-        funStreamOf(1, 2, 3).getTail()
-            .toString() shouldBe "Cons(head=() -> T, tail=() -> org.kiworkshop.learningfpinkotlin.FunStream<T>)"
+        funStreamOf(1, 2, 3).getTail().toString() shouldBe "[2, 3]"
 
         funStreamOf(1, 2, 3).getTail().toList().shouldContainExactly(2, 3)
 

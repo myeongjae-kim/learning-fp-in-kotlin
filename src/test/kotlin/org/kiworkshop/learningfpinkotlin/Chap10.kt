@@ -74,83 +74,83 @@ class Chap10 : StringSpec({
         (funStreamOf(1, 2) append funStreamOf(3, 4)).toString() shouldBe "[1, 2, 3, 4]"
 
         funStreamOf(1, 2, 3).foldMap({ funStreamOf(it * it) }, FunStreamMonoid()).toString() shouldBe "[1, 4, 9]"
-    }
+        }
 
-    "Example 10-12" {
-        funStreamOf(1, 2, 3).fmap { it * it }.toString() shouldBe "[1, 4, 9]"
-        funStreamOf(1, 2, 3).fmap { println(it); it * it }.take(1).toString() shouldBe "[1]"
-    }
+        "Example 10-12" {
+            funStreamOf(1, 2, 3).fmap { it * it }.toString() shouldBe "[1, 4, 9]"
+            funStreamOf(1, 2, 3).fmap { println(it); it * it }.take(1).toString() shouldBe "[1]"
+        }
 
-    "Example 10-13" {
-        FunStream.pure(1).toString() shouldBe "[1]"
-        (FunStream.pure { x: Int -> x * x } apply funStreamOf(1, 2, 3)).toString() shouldBe "[1, 4, 9]"
-    }
+        "Example 10-13" {
+            FunStream.pure(1).toString() shouldBe "[1]"
+            (FunStream.pure { x: Int -> x * x } apply funStreamOf(1, 2, 3)).toString() shouldBe "[1, 4, 9]"
+        }
 
-    // foldRight, flatten이 게으르게 작동할 수 있나?
-    // 어떤 값으로 매핑이 될 줄 알고 게을러? 문제에서 말하는 게으름이 뭐지
-    // 저자 코드도 내 코드랑 거의 비슷한데.
-    "Example 10-14" {
-        funStreamOf(1, 2, 3).foldRight(0) { curr, acc -> acc + curr } shouldBe 6
+        // foldRight, flatten이 게으르게 작동할 수 있나?
+        // 어떤 값으로 매핑이 될 줄 알고 게을러? 문제에서 말하는 게으름이 뭐지
+        // 저자 코드도 내 코드랑 거의 비슷한데.
+        "Example 10-14" {
+            funStreamOf(1, 2, 3).foldRight(0) { curr, acc -> acc + curr } shouldBe 6
 
-        funStreamOf(funStreamOf(1), funStreamOf(2)).flatten().take(1).toString() shouldBe "[1]"
+            funStreamOf(funStreamOf(1), funStreamOf(2)).flatten().take(1).toString() shouldBe "[1]"
 
-        funStreamOf(1, 2, 3).flatMap { funStreamOf(it * it) }.toString() shouldBe "[1, 4, 9]"
+            funStreamOf(1, 2, 3).flatMap { funStreamOf(it * it) }.toString() shouldBe "[1, 4, 9]"
 
-        // 1, 2, 3이 모두 찍힌다. FunStream의 flatMap은 무엇에 대해서 게으른거지?
-        (funStreamOf(1, 2, 3).flatMap { println(it); funStreamOf(it * it) } as FunStream<Int>).take(1)
-            .toString() shouldBe "[1]"
-    }
+            // 1, 2, 3이 모두 찍힌다. FunStream의 flatMap은 무엇에 대해서 게으른거지?
+            (funStreamOf(1, 2, 3).flatMap { println(it); funStreamOf(it * it) } as FunStream<Int>).take(1)
+                .toString() shouldBe "[1]"
+        }
 
-    "Example 10-14 of authors" {
-        fun <T> FunStream<FunStream<T>>.flatten2(): FunStream<T> {
-            println("flatten2")
-            return when (this) {
-                FunStream.Nil -> FunStream.Nil
-                is FunStream.Cons -> head() append tail().flatten2()
+        "Example 10-14 of authors" {
+            fun <T> FunStream<FunStream<T>>.flatten2(): FunStream<T> {
+                println("flatten2")
+                return when (this) {
+                    FunStream.Nil -> FunStream.Nil
+                    is FunStream.Cons -> head() append tail().flatten2()
+                }
             }
-        }
 
-        fun <T, R> FunStream<T>.foldRight2(acc: R, f: (T, R) -> R): R {
-            println("foldRight2")
-            return when (this) {
-                FunStream.Nil -> acc
-                is FunStream.Cons -> f(head(), tail().foldRight2(acc, f))
+            fun <T, R> FunStream<T>.foldRight2(acc: R, f: (T, R) -> R): R {
+                println("foldRight2")
+                return when (this) {
+                    FunStream.Nil -> acc
+                    is FunStream.Cons -> f(head(), tail().foldRight2(acc, f))
+                }
             }
-        }
 
-        infix fun <T, R> FunStream<T>.flatMap2(f: (T) -> FunStream<R>): FunStream<R> {
-            println("flatMap2")
-            return when (this) {
-                FunStream.Nil -> FunStream.Nil
-                is FunStream.Cons -> f(head()) append tail().flatMap2(f)
+            infix fun <T, R> FunStream<T>.flatMap2(f: (T) -> FunStream<R>): FunStream<R> {
+                println("flatMap2")
+                return when (this) {
+                    FunStream.Nil -> FunStream.Nil
+                    is FunStream.Cons -> f(head()) append tail().flatMap2(f)
+                }
             }
+
+            val valueStream: FunStream<Int> = funStreamOf(1, 2, 3)
+            val functionStream: (Int) -> FunStream<Int> = { x ->
+                funStreamOf(x, x * 2, x * 3)
+            }
+            val flatMapResult = valueStream flatMap2 functionStream
+            flatMapResult.toString() shouldBe "[1, 2, 3, 2, 4, 6, 3, 6, 9]"
+
+            val funStream: FunStream<FunStream<Int>> = funStreamOf(funStreamOf(1, 2), funStreamOf(3, 4), funStreamOf(5, 6))
+            val flattenResult = funStream.flatten2()
+            flattenResult.toString() shouldBe "[1, 2, 3, 4, 5, 6]"
+
+            val foldRightStream = funStreamOf(1, 2, 3)
+            val foldRightResult = foldRightStream.foldRight2(1) { x, acc -> x * acc }
+            foldRightResult shouldBe 6
         }
 
-        val valueStream: FunStream<Int> = funStreamOf(1, 2, 3)
-        val functionStream: (Int) -> FunStream<Int> = { x ->
-            funStreamOf(x, x * 2, x * 3)
-        }
-        val flatMapResult = valueStream flatMap2 functionStream
-        flatMapResult.toString() shouldBe "[1, 2, 3, 2, 4, 6, 3, 6, 9]"
-
-        val funStream: FunStream<FunStream<Int>> = funStreamOf(funStreamOf(1, 2), funStreamOf(3, 4), funStreamOf(5, 6))
-        val flattenResult = funStream.flatten2()
-        flattenResult.toString() shouldBe "[1, 2, 3, 4, 5, 6]"
-
-        val foldRightStream = funStreamOf(1, 2, 3)
-        val foldRightResult = foldRightStream.foldRight2(1) { x, acc -> x * acc }
-        foldRightResult shouldBe 6
-    }
-
-    // 저자 풀이를 참고했다.
-    // 깨달은 것: flatMap은 mappend만 구현하면 만들 수 있다. 바이너리 트리의 mappend는 리스트와는 다르게 left와 right 중에서 선택해야 한다.
-    // map과 flatMap. 둘 중 뭐가 더 본질적이냐? flatMap을 사용하서 map 구현 -> 가능. map을 사용해서 flatMap구현 -> 가능
-    // FunList는 fmap을 사용해서 flatMap을 구현했고, FunTree는 flatMap을 사용해서 fmap을 구현했다.
-    // Monad 인터페이스를 구현하는 경우 flatMap만 구현하면 fmap은 자동으로 구현하게 됨.
-    // map이 flatMap을 의존하게 만드는게 코드상으로는 깔끔해보인다.
-    "Example 10-15" {
-        FunTree.Node(2, FunTree.Node(1, FunTree.Node(4)), FunTree.Node(3))
-            .toString() shouldBe "[[[E, 4, E], 1, E], 2, [E, 3, E]]"
+        // 저자 풀이를 참고했다.
+        // 깨달은 것: flatMap은 mappend만 구현하면 만들 수 있다. 바이너리 트리의 mappend는 리스트와는 다르게 left와 right 중에서 선택해야 한다.
+        // map과 flatMap. 둘 중 뭐가 더 본질적이냐? flatMap을 사용하서 map 구현 -> 가능. map을 사용해서 flatMap구현 -> 가능
+        // FunList는 fmap을 사용해서 flatMap을 구현했고, FunTree는 flatMap을 사용해서 fmap을 구현했다.
+        // Monad 인터페이스를 구현하는 경우 flatMap만 구현하면 fmap은 자동으로 구현하게 됨.
+        // map이 flatMap을 의존하게 만드는게 코드상으로는 깔끔해보인다.
+        "Example 10-15" {
+            FunTree.Node(2, FunTree.Node(1, FunTree.Node(4)), FunTree.Node(3))
+                .toString() shouldBe "[[[E, 4, E], 1, E], 2, [E, 3, E]]"
 
         /*
               2
@@ -163,18 +163,19 @@ class Chap10 : StringSpec({
                      10                30
                 100     1000      300      3000
          */
-        FunTree.Node(2, FunTree.Node(1), FunTree.Node(3))
-            .flatMap { FunTree.Node(it * 10, FunTree.Node(it * 100), FunTree.Node(it * 1000)) }
-            .toString() shouldBe "[[[[E, 100, E], 10, [E, 1000, E]], 200, [[E, 300, E], 30, [E, 3000, E]]], 20, [E, 2000, E]]"
+            FunTree.Node(2, FunTree.Node(1), FunTree.Node(3))
+                .flatMap { FunTree.Node(it * 10, FunTree.Node(it * 100), FunTree.Node(it * 1000)) }
+                .toString() shouldBe "[[[[E, 100, E], 10, [E, 1000, E]], 200, [[E, 300, E], 30, [E, 3000, E]]], 20, [E, 2000, E]]"
 
-        FunTree.Node(2, FunTree.Node(1), FunTree.Node(3)).fmap { it * it }
-            .toString() shouldBe "[[E, 1, E], 4, [E, 9, E]]"
-    }
+            FunTree.Node(2, FunTree.Node(1), FunTree.Node(3)).fmap { it * it }
+                .toString() shouldBe "[[E, 1, E], 4, [E, 9, E]]"
+        }
 
-    "Foldable FunTree" {
-        FunTree.Node(1, FunTree.Node(2), FunTree.Node(3))
-            .foldLeft(funListOf<Int>()) { acc, curr -> acc.addHead(curr) }
-            .reverse()
-            .shouldBe(funListOf(1, 2, 3))
-    }
-})
+        "Foldable FunTree" {
+            FunTree.Node(1, FunTree.Node(2), FunTree.Node(3))
+                .foldLeft(funListOf<Int>()) { acc, curr -> acc.addHead(curr) }
+                .reverse()
+                .shouldBe(funListOf(1, 2, 3))
+        }
+    })
+    
