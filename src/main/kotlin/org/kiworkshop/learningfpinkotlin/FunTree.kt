@@ -1,6 +1,6 @@
 package org.kiworkshop.learningfpinkotlin
 
-sealed class FunTree<out A> : Monad<A> {
+sealed class FunTree<out A> : Foldable<A>, Monad<A> {
 
     companion object;
 
@@ -10,6 +10,7 @@ sealed class FunTree<out A> : Monad<A> {
         override fun toString(): String = "E"
 
         override fun <B> flatMap(f: (Nothing) -> Monad<B>): FunTree<B> = Nil
+        override fun <B> foldLeft(acc: B, f: (B, Nothing) -> B): B = acc
     }
 
     data class Node<out A>(val value: A, val left: FunTree<A> = Nil, val right: FunTree<A> = Nil) : FunTree<A>() {
@@ -25,6 +26,12 @@ sealed class FunTree<out A> : Monad<A> {
             val r = right.flatMap(f) as FunTree<B>
 
             return v mappend l mappend r
+        }
+
+        override fun <B> foldLeft(acc: B, f: (B, A) -> B): B {
+            val v = f(acc, value)
+            val l = left.foldLeft(v, f)
+            return right.foldLeft(l, f)
         }
     }
 }

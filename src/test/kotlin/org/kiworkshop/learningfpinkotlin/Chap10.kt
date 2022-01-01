@@ -165,4 +165,11 @@ class Chap10 : StringSpec({
             .flatMap { FunTree.Node(it * 10, FunTree.Node(it * 100), FunTree.Node(it * 1000)) }
             .toString() shouldBe "[[[[E, 100, E], 10, [E, 1000, E]], 200, [[E, 300, E], 30, [E, 3000, E]]], 20, [E, 2000, E]]"
     }
+
+    "Foldable FunTree" {
+        FunTree.Node(1, FunTree.Node(2), FunTree.Node(3))
+            .foldLeft(funListOf<Int>()) { acc, curr -> acc.addHead(curr) }
+            .reverse()
+            .shouldBe(funListOf(1, 2, 3))
+    }
 })
