@@ -33,6 +33,14 @@ infix fun <A, B> Node<(A) -> B>.apply(node: Node<A>): Node<B> = Node(
 fun <A, B, R> Tree.Companion.liftA2(binaryFunction: (A, B) -> R) =
     { f1: Node<A>, f2: Node<B> -> Tree.pure(binaryFunction.curried()) apply f1 apply f2 }
 
+fun <T> Tree.Companion.sequenceA(nodeList: FunList<Node<T>>): Node<FunList<T>> = when (nodeList) {
+    FunList.Nil -> Node(funListOf())
+    is FunList.Cons -> Tree.pure(FunList.cons<T>().curried()) apply nodeList.head apply sequenceA(nodeList.tail)
+}
+
+fun <T> Tree.Companion.sequenceByFoldRight(nodeList: FunList<Node<T>>): Node<FunList<T>> =
+    nodeList.foldRight(Tree.pure(funListOf()), liftA2(FunList.cons()))
+
 fun <A> Tree<A>.contains(value: A): Boolean = foldMap({ it == value }, AnyMonoid())
 
 fun <A> Tree<A>.toFunList(): FunList<A> = foldMap({ funListOf(it) }, FunListMonoid())

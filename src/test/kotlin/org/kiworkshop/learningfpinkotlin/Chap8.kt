@@ -128,7 +128,7 @@ class Chap8 : StringSpec({
         /*
            1        10
          2  3     20  30
-         
+
           11
         21  31     12      13
                  22  32  23  33
@@ -194,7 +194,16 @@ class Chap8 : StringSpec({
     }
 
     "Example 17" {
-        // hard...
+        // 이해를 포기한다
+        Tree.sequenceA(funListOf(Node(1, listOf(Node(2))), Node(3, listOf(Node(4))))) shouldBe Node(
+            funListOf(1, 3),
+            listOf(Node(funListOf(1, 4)), Node(funListOf(2, 3), listOf(Node(funListOf(2, 4)))))
+        )
+
+        Tree.sequenceByFoldRight(funListOf(Node(1, listOf(Node(2))), Node(3, listOf(Node(4))))) shouldBe Node(
+            funListOf(1, 3),
+            listOf(Node(funListOf(1, 4)), Node(funListOf(2, 3), listOf(Node(funListOf(2, 4)))))
+        )
     }
 
     "Example 18" {
